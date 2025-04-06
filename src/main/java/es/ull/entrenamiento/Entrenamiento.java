@@ -40,6 +40,10 @@ public class Entrenamiento {
 		Dataset testset = new Dataset(datos.getAtributosEmpty());
 		clases = datos.getClases();
 		ArrayList<Integer> indices = new ArrayList<>();
+		// Suprimir la advertencia de SonarCloud (java:S2245) ya que el uso de
+		// Random con una semilla es intencional para la repetibilidad de la
+		// división del dataset con fines de experimentación reproducible.
+		@SuppressWarnings("java:S2245")
 		Random random = new Random(semilla);
 		while(indices.size() < datos.NumeroCasos()*porcentaje) {
 			int randomNumber = random.nextInt(datos.NumeroCasos());
