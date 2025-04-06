@@ -1,5 +1,6 @@
 package knn_tfg;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,80 +20,134 @@ public class KnnTfg {
 	private static final String MENSAJE_INTRODUCIR_VALORES = "Introduce los valores: ";
 	private static final String MENSAJE_INTRODUCIR_PORCENTAJE = "Introduzca el porcentaje para el conjunto de entrenamiento";
 
+	private static Dataset datosCrudos = new Dataset();
+	private static Dataset datos = new Dataset();
+	private static Scanner scanner = new Scanner(System.in);
+
 	public static void main(String[] args) throws IOException {
+		logger.info("El programa KNN_TFG ha comenzado.");
 		String ruta = "";
 		boolean salida = false;
-		Dataset datosCrudos = new Dataset();
-		Dataset datos = new Dataset();
 		String archivo;
-		while(!salida) {
-			logger.info("Seleccione una opción: ");
-			logger.info("   [1] Cargar un dataset ");
-			logger.info("   [2] Guargar un dataset ");
-			logger.info("   [3] Modificar un dataset ");
-			logger.info("   [4] Mostrar información ");
-			logger.info("   [5] Salir del programa ");
-			logger.info("   [6] Realizar experimentación ");
-			logger.info("   [7] Algoritmo KNN para una instancia ");
-			int opcion = 1;
-			Scanner scanner = new Scanner(System.in);
+
+		while (!salida) {
+			mostrarMenu();
+			int opcion = obtenerOpcionUsuario();
+			salida = procesarOpcion(opcion);
+		}
+		logger.info("El programa KNN_TFG ha terminado.");
+		scanner.close(); // Asegúrate de cerrar el scanner
+	}
+
+	private static void mostrarMenu() {
+		logger.info("Seleccione una opción: ");
+		logger.info("    [1] Cargar un dataset ");
+		logger.info("    [2] Guardar un dataset ");
+		logger.info("    [3] Modificar un dataset ");
+		logger.info("    [4] Mostrar información ");
+		logger.info("    [5] Salir del programa ");
+		logger.info("    [6] Realizar experimentación ");
+		logger.info("    [7] Algoritmo KNN para una instancia ");
+	}
+
+	private static int obtenerOpcionUsuario() {
+		logger.info("Introduce el número de la opción: ");
+		int opcion = -1;
+		try {
 			opcion = scanner.nextInt();
-			switch(opcion) {
-			case(1):
-				archivo = readFile(ruta);
-				datosCrudos = new Dataset(ruta+archivo);
-				datos = new Dataset(ruta+archivo);
-				datos = preprocesar(datos);
+		} catch (java.util.InputMismatchException e) {
+			logger.warn("Entrada inválida. Por favor, introduce un número.");
+			scanner.next(); // Limpiar el buffer del scanner
+		}
+		scanner.nextLine(); // Consumir la nueva línea
+		return opcion;
+	}
+
+	private static boolean procesarOpcion(int opcion) throws IOException {
+		switch (opcion) {
+			case 1:
+				cargarDataset();
 				break;
-			case(2):
-				archivo = readFile(ruta);
-				datos.write(ruta+archivo);
+			case 2:
+				guardarDataset();
 				break;
-			case(3):
-				datos = modify(datos);
+			case 3:
+				modificarDataset();
 				break;
-			case(4):
-				info(datos);
+			case 4:
+				mostrarInformacion();
 				break;
-			case(5):
-				salida = true;
+			case 5:
+				logger.info("Saliendo del programa.");
+				return true;
+			case 6:
+				realizarExperimentacion();
 				break;
-			case(6):
-				experimentar(datos);
-				break;
-			case(7):
-				logger.info(MENSAJE_INTRODUCIR_K);
-				int k = scanner.nextInt();
-				KNN intento = new KNN(k);
-				String valoresString = "";
-				logger.info(MENSAJE_INTRODUCIR_VALORES);
-				Scanner scanner1 = new Scanner(System.in);
-				valoresString = scanner1.nextLine();
-				String[] subcadenas = valoresString.split(",");
-				ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(subcadenas));
-				Instancia instance = new Instancia (valoresString);
-				Dataset copiaCrudos = new Dataset(datosCrudos);
-				if (datos.getPreprocesado() != 1) {
-					arrayList.add("clase");
-					copiaCrudos.add(arrayList);
-					Preprocesado intento1 = new Normalizacion();
-					if (datos.getPreprocesado() == 2) intento1 = new Normalizacion();
-					if (datos.getPreprocesado() == 3) intento1 = new Estandarizacion();
-					copiaCrudos = new Dataset (intento1.procesar(copiaCrudos));
-					instance = copiaCrudos.getInstance(copiaCrudos.numeroCasos()-1);
-					copiaCrudos.delete(copiaCrudos.numeroCasos()-1);
-					instance.deleteClase();
-				}
-				if (logger.isInfoEnabled()) {
-					String claseElegida = intento.clasificar(copiaCrudos, instance);
-					logger.info("La clase elegida es: {}", claseElegida);
-				}
+			case 7:
+				algoritmoKNNInstancia();
 				break;
 			default:
-			}
+				logger.warn("Opción inválida. Por favor, selecciona una opción del menú.");
 		}
-    }
-	
+		return false;
+	}
+
+	private static void cargarDataset() throws IOException {
+		String ruta = "";
+		String archivo = readFile(ruta);
+		datosCrudos = new Dataset(ruta+archivo);
+		datos = new Dataset(ruta+archivo);
+		datos = preprocesar(datos);
+	}
+
+	private static void guardarDataset() throws IOException {
+		String ruta = "";
+		String archivo = readFile(ruta);
+		datos.write(ruta+archivo);
+	}
+
+	private static void modificarDataset() throws IOException {
+		datos = modify(datos);
+	}
+
+	private static void mostrarInformacion() {
+		info(datos);
+	}
+
+	private static void realizarExperimentacion() throws IOException {
+		experimentar(datos);
+	}
+
+	private static void algoritmoKNNInstancia() throws IOException {
+		logger.info(MENSAJE_INTRODUCIR_K);
+		int k = scanner.nextInt();
+		KNN intento = new KNN(k);
+		String valoresString = "";
+		logger.info(MENSAJE_INTRODUCIR_VALORES);
+		Scanner scanner1 = new Scanner(System.in);
+		valoresString = scanner1.nextLine();
+		String[] subcadenas = valoresString.split(",");
+		ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(subcadenas));
+		Instancia instance = new Instancia (valoresString);
+		Dataset copiaCrudos = new Dataset(datosCrudos);
+		if (datos.getPreprocesado() != 1) {
+			arrayList.add("clase");
+			copiaCrudos.add(arrayList);
+			Preprocesado intento1 = new Normalizacion();
+			if (datos.getPreprocesado() == 2) intento1 = new Normalizacion();
+			if (datos.getPreprocesado() == 3) intento1 = new Estandarizacion();
+			copiaCrudos = new Dataset (intento1.procesar(copiaCrudos));
+			instance = copiaCrudos.getInstance(copiaCrudos.numeroCasos()-1);
+			copiaCrudos.delete(copiaCrudos.numeroCasos()-1);
+			instance.deleteClase();
+		}
+		if (logger.isInfoEnabled()) {
+			String claseElegida = intento.clasificar(copiaCrudos, instance);
+			logger.info("La clase elegida es: {}", claseElegida);
+		}
+	}
+
+
 	public static String readFile(String ruta) {
 		int opcion = 2;
 		String archivo = "";
@@ -123,7 +178,7 @@ public class KnnTfg {
 		}
 		return archivo;
 	}
-	
+
 	public static Dataset modify(Dataset data) {
 		int opcion = 2;
 		String valores = "";
@@ -181,7 +236,7 @@ public class KnnTfg {
 		}
 		return data;
 	}
-	
+
 	public static Dataset preprocesar(Dataset data) {
 		logger.info("Seleccione la opción de preprocesado: ");
 		logger.info("       [1] Datos crudos ");
@@ -212,7 +267,7 @@ public class KnnTfg {
 		}
 		return data;
 	}
-	
+
 	public static Dataset cambiarPesos(Dataset data) {
 		logger.info("           [1] Asignar pesos distintos a todos los atributos ");
 		logger.info("           [2] Mismo peso para todos los atributos "); // por defecto ( valor 1 )
@@ -251,7 +306,7 @@ public class KnnTfg {
 		}
 		return data;
 	}
-	
+
 	public static void info(Dataset data) {
 		logger.info("           [1] Mostrar dataset ");
 		logger.info("           [2] Mostrar instancia ");
@@ -290,7 +345,7 @@ public class KnnTfg {
 			break;
 		}
 	}
-	
+
 	public static void infoCuantitativo(Dataset data) {
 		logger.info("               [1] Mostrar nombre ");
 		logger.info("               [2] Mostrar media ");
@@ -344,7 +399,7 @@ public class KnnTfg {
 			break;
 		}
 	}
-	
+
 	public static void infoCualitativo(Dataset data) {
 		logger.info("               [1] Mostrar nombre ");
 		logger.info("               [2] Mostrar número de clases ");
@@ -364,7 +419,7 @@ public class KnnTfg {
 			} catch (ClassCastException e) {
 				logger.info("Ese atributo no es cualitativo");
 			}
-			
+
 			break;
 		case(2):
 			valor = 0;
@@ -396,7 +451,7 @@ public class KnnTfg {
 			break;
 		}
 	}
-	
+
 	public static void experimentar(Dataset datos) throws IOException {
 		int opcion = 1;
 		Scanner scanner = new Scanner(System.in);
@@ -450,7 +505,7 @@ public class KnnTfg {
 			}
 		}
 	}
-	
+
 	public static Entrenamiento experimentacionAleatoria(Dataset datos) {
 		logger.info("               [1] Semilla(Seed) por defecto");
 		logger.info("               [2] Semilla(Seed) manual");

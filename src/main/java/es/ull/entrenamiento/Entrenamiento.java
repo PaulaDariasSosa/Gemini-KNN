@@ -79,7 +79,7 @@ public class Entrenamiento {
 		}
 		Logger logger = LoggerFactory.getLogger(Entrenamiento.class);
 		if (logger.isInfoEnabled()) {
-			double precision = (double) aciertos / test.numeroCasos() * 100;
+			double precision = aciertos / test.numeroCasos() * 100;
 			logger.info("La precisión predictiva: {} / {} = {}%", aciertos, test.numeroCasos(), String.format("%.2f", precision));
 		}
 		
