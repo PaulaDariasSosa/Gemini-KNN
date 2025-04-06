@@ -83,7 +83,10 @@ public class KnnTfg {
 					copiaCrudos.delete(copiaCrudos.numeroCasos()-1);
 					instance.deleteClase();
 				}
-				logger.info("La clase elegida es: " + intento.clasificar(copiaCrudos, instance));
+				if (logger.isInfoEnabled()) {
+					String claseElegida = intento.clasificar(copiaCrudos, instance);
+					logger.info("La clase elegida es: {}", claseElegida);
+				}
 				break;
 			default:
 			}
@@ -141,7 +144,9 @@ public class KnnTfg {
 				valores = scanner1.nextLine();
 				String[] subcadenas = valores.split(",");
 				ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(subcadenas));
-				logger.info(String.valueOf(arrayList));
+				if (logger.isInfoEnabled()) {
+					logger.info(String.valueOf(arrayList));
+				}
 				data.add(arrayList);
 				return data;
 			case(2):
@@ -264,7 +269,9 @@ public class KnnTfg {
 			int valor = 0;
 			Scanner scanner1 = new Scanner(System.in);
 			valor = scanner1.nextInt();
-			logger.info(data.getInstance(valor).toString());
+			if (logger.isInfoEnabled()) {
+				logger.info(data.getInstance(valor).toString());
+			}
 			break;
 		case(3):
 			infoCuantitativo(data);
@@ -275,7 +282,9 @@ public class KnnTfg {
 		case(5):
 			List<String> pesos = new ArrayList<>();
 			pesos = data.getPesos();
-			logger.info(pesos.toString());
+			if (logger.isInfoEnabled()) {
+				logger.info(pesos.toString());
+			}
 			break;
 		default:
 			break;
@@ -363,7 +372,9 @@ public class KnnTfg {
 			valor = scanner1.nextInt();
 			Cualitativo auxiliar = (Cualitativo) data.get(valor);
 			Integer resultado = auxiliar.nClases();
-			logger.info(resultado.toString());
+			if (logger.isInfoEnabled()) {
+				logger.info(resultado.toString());
+			}
 			break;
 		case(3):
 				valor = 0;

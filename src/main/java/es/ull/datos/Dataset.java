@@ -68,7 +68,9 @@ public class Dataset {
 	// Print
 	public void print() {
 		Logger logger = Logger.getLogger(Dataset.class.getName());
-		logger.info(this.toString());
+		if (logger.isLoggable(java.util.logging.Level.INFO)) {
+			logger.info(this.toString());
+		}
 	}
 	
 	// toString

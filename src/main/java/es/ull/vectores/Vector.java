@@ -38,7 +38,7 @@ public class Vector {
      * Constructor que recibe un ArrayList de double
      * @param coef
      */
-    public Vector(ArrayList<Double> coef) {
+    public Vector(List<Double> coef) {
     	this.coef = new ArrayList<>(coef);
     }
     
@@ -113,7 +113,10 @@ public class Vector {
 
     public void print() {
         Logger logger = LoggerFactory.getLogger(Vector.class);
-        logger.info(this.toString());
+        if(logger.isInfoEnabled()){
+            logger.info(this.toString());
+        }
+
     }
 
     public double get(int index) {

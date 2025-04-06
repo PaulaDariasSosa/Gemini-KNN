@@ -7,7 +7,6 @@ import java.util.*;
 
 import clasificacion.KNN;
 import datos.*;
-import knn_tfg.KnnTfg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vectores.Matriz;
@@ -79,7 +78,10 @@ public class Entrenamiento {
 			if (clase.equals(test.getInstance(i).getClase())) aciertos += 1;
 		}
 		Logger logger = LoggerFactory.getLogger(Entrenamiento.class);
-		logger.info("La precisión predictiva: " + aciertos + " / " + test.numeroCasos() +" = "+ (aciertos/test.numeroCasos())*100 + "%");
+		if (logger.isInfoEnabled()) {
+			double precision = (double) aciertos / test.numeroCasos() * 100;
+			logger.info("La precisión predictiva: {} / {} = {}%", aciertos, test.numeroCasos(), String.format("%.2f", precision));
+		}
 		
 	}
 	
@@ -96,7 +98,9 @@ public class Entrenamiento {
 			confusion.set( clases.indexOf(test.getInstance(i).getClase()),clases.indexOf(clase),confusion.get(clases.indexOf(test.getInstance(i).getClase()),clases.indexOf(clase))+1);
 		}
 		Logger logger = LoggerFactory.getLogger(Entrenamiento.class);
-		logger.info(clases.toString());
+		if(logger.isInfoEnabled()) {
+			logger.info(clases.toString());
+		}
 		confusion.print();
 	}
 	

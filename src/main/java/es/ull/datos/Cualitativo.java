@@ -43,7 +43,7 @@ public class Cualitativo extends Atributo{
 		this.valores = nuevos;
 	}
 	
-	public ArrayList<String> clases() {
+	public List<String> clases() {
 		ArrayList<String> clases = new ArrayList<>();
 		for(int i = 0; i < this.valores.size(); ++i) {
 			if(!clases.contains(this.valores.get(i))) clases.add(this.valores.get(i));
@@ -56,7 +56,7 @@ public class Cualitativo extends Atributo{
 	}
 	
 	public List<Double> frecuencia() {
-		ArrayList<String> clases = this.clases();
+		List<String> clases = this.clases();
 		ArrayList<Double> frecuencias = new ArrayList<>();
 		for (int j = 0; j < this.nClases(); ++j) {
 			double auxiliar = 0;
