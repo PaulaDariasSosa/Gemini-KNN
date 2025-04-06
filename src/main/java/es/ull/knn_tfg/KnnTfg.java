@@ -1,6 +1,5 @@
 package knn_tfg;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,9 +25,7 @@ public class KnnTfg {
 
 	public static void main(String[] args) throws IOException {
 		logger.info("El programa KNN_TFG ha comenzado.");
-		String ruta = "";
 		boolean salida = false;
-		String archivo;
 
 		while (!salida) {
 			mostrarMenu();
@@ -106,7 +103,7 @@ public class KnnTfg {
 		datos.write(ruta+archivo);
 	}
 
-	private static void modificarDataset() throws IOException {
+	private static void modificarDataset() {
 		datos = modify(datos);
 	}
 
@@ -118,7 +115,7 @@ public class KnnTfg {
 		experimentar(datos);
 	}
 
-	private static void algoritmoKNNInstancia() throws IOException {
+	private static void algoritmoKNNInstancia() {
 		logger.info(MENSAJE_INTRODUCIR_K);
 		int k = scanner.nextInt();
 		KNN intento = new KNN(k);
