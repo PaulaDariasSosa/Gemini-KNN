@@ -1,11 +1,10 @@
 package datos;
 
 import java.util.ArrayList;
-
-//import vectores.Vector;
+import java.util.List;
 
 public class Cualitativo extends Atributo{
-	private ArrayList<String> valores;
+	private List<String> valores;
 	
 	public Cualitativo() {
 		this.nombre = "";
@@ -23,17 +22,24 @@ public class Cualitativo extends Atributo{
 		valores.add(valor);
 	}
 	
-	public Cualitativo(String name, ArrayList<String> valor) {
+	public Cualitativo(String name, List<String> valor) {
 		this();
 		this.nombre = name;
 		this.valores = valor;
 	}
+
+	public Cualitativo(Cualitativo otro) {
+		this();
+		this.nombre = otro.getNombre();
+		this.peso = otro.getPeso();
+		this.valores = new ArrayList<String>();
+	}
 	
-	public ArrayList<String> getValores() {
+	public List<String> getValores() {
 		return this.valores;
 	}
 	
-	public void setValores(ArrayList<String> nuevos) {
+	public void setValores(List<String> nuevos) {
 		this.valores = nuevos;
 	}
 	
@@ -49,7 +55,7 @@ public class Cualitativo extends Atributo{
 		return this.clases().size();
 	}
 	
-	public ArrayList<Double> frecuencia() {
+	public List<Double> frecuencia() {
 		ArrayList<String> clases = this.clases();
 		ArrayList<Double> frecuencias = new ArrayList<>();
 		for (int j = 0; j < this.nClases(); ++j) {
@@ -92,9 +98,5 @@ public class Cualitativo extends Atributo{
 	public void clear() {
 		valores.clear();
 	}
-	
-	@Override
-	public Cualitativo clone() {
-		return new Cualitativo(new String (this.nombre), new ArrayList<String>(this.valores));
-	}
+
 }

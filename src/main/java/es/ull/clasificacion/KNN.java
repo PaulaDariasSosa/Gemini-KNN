@@ -2,6 +2,7 @@ package clasificacion;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import datos.*;
 import vectores.Vector;
@@ -21,13 +22,13 @@ public class KNN {
 	for (Atributo str : pesosString) {
         pesosDouble.add(str.getPeso());
     }
-    for (int i = 0; i < datos.NumeroCasos(); ++i) {
+    for (int i = 0; i < datos.numeroCasos(); ++i) {
     	aux.add(this.getDistanciaEuclidea(datos.getInstance(i).getVector(), nueva.getVector(), pesosDouble));
     }
     return aux;
   }
   
-  public String getClase (ArrayList<Instancia> candidatos, Vector distancias) {
+  public String getClase (List<Instancia> candidatos) {
 	  ArrayList<String> nombresClases = new ArrayList<>();
 	  for (int i = 0; i < candidatos.size(); i++) {
 		  if (!nombresClases.contains(candidatos.get(i).getClase())) nombresClases.add(candidatos.get(i).getClase());
@@ -45,7 +46,9 @@ public class KNN {
   }
   
   public double getDistanciaEuclidea(Vector vieja, Vector nueva) {
-	assert vieja.size() == nueva.size();
+	  if (vieja.size() == nueva.size()) {
+		  throw new IllegalArgumentException("Los vectores deben tener distinto tamaño para calcular la distancia euclídea.");
+	  }
 	double dist = 0.0;
 	for(int i = 0; i < nueva.size(); i++) {
 		dist += Math.pow((vieja.get(i) - nueva.get(i)), 2);
@@ -53,8 +56,10 @@ public class KNN {
 	return Math.sqrt(dist);
   }
   
-  public double getDistanciaEuclidea(Vector vieja, Vector nueva, ArrayList<Double> pesos) {
-		assert vieja.size() == nueva.size();
+  public double getDistanciaEuclidea(Vector vieja, Vector nueva, List<Double> pesos) {
+	  if (vieja.size() == nueva.size()) {
+		  throw new IllegalArgumentException("Los vectores deben tener distinto tamaño para calcular la distancia euclídea.");
+	  }
 		double dist = 0.0;
 		for(int i = 0; i < nueva.size(); i++) {
 			dist += Math.pow((vieja.get(i) - nueva.get(i))*pesos.get(i), 2);
@@ -62,7 +67,7 @@ public class KNN {
 		return Math.sqrt(dist);
 	  }
   
-  public String getVecino(ArrayList<Instancia> candidatos, Vector distancias){
+  public String getVecino(List<Instancia> candidatos, Vector distancias){
 	  Vector aux = new Vector();
 	  ArrayList<Integer> indices = new ArrayList<>();
 	  for (int i = 0; i < vecinos; i++) {
@@ -80,13 +85,13 @@ public class KNN {
 	  }
 	  ArrayList<Instancia> elegidos = new ArrayList<>();
 	  for (int i = 0; i < indices.size(); i++) elegidos.add(candidatos.get(indices.get(i)));
-	  return this.getClase(elegidos, aux); 
+	  return this.getClase(elegidos);
   }
   
   public String clasificar(Dataset datos, Instancia nueva) {
 	  Vector aux = this.getDistancias(datos, nueva);
 	  ArrayList<Instancia> elegidos = new ArrayList<>();
-	  for (int i = 0; i < datos.NumeroCasos(); ++i) {
+	  for (int i = 0; i < datos.numeroCasos(); ++i) {
 	    elegidos.add(datos.getInstance(i));
 	  }
 	  return this.getVecino(elegidos, aux);

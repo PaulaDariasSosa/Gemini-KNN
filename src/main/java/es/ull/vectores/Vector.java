@@ -1,5 +1,8 @@
 package vectores;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,10 +10,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Vector {
-	private ArrayList<Double> coef;
+	private List<Double> coef;
 
     /**
      * Constructor vacio
@@ -86,8 +90,8 @@ public class Vector {
      * Método para clonar un vector
      * @return la copia del vector original
      */
-    public Vector clone() {
-        return new Vector(new ArrayList<Double> (this.coef));
+    public Vector(Vector other) {
+        this.coef = new ArrayList<>(other.coef);
     }
     
     /**
@@ -108,7 +112,8 @@ public class Vector {
     }
 
     public void print() {
-        System.out.println(this.toString());
+        Logger logger = LoggerFactory.getLogger(Vector.class);
+        logger.info(this.toString());
     }
 
     public double get(int index) {
@@ -278,7 +283,7 @@ public class Vector {
         }
     }
     
-    public ArrayList<Double> getValores() {
+    public List<Double> getValores() {
         return this.coef;
     }
 }

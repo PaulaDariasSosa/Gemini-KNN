@@ -37,6 +37,5 @@ public abstract class Atributo {
 	public abstract String toString();
 	
 	public abstract void clear();
-	
-	public abstract Atributo clone();
+
 }

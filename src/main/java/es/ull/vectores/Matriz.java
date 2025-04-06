@@ -2,9 +2,10 @@ package vectores;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Matriz {
-    private ArrayList<Vector> matrix;
+    private List<Vector> matrix;
     private int numRows;
     private int numCols;
     private boolean isTransposed;
@@ -23,7 +24,7 @@ public class Matriz {
         this.numCols = n;
         matrix = new ArrayList<Vector>(m);
         for (int i = 0; i < m; i++) {
-            matrix.add(i, (new Vector(n)));;
+            matrix.add(i, (new Vector(n)));
         }
         isTransposed = false;
     }
@@ -42,7 +43,7 @@ public class Matriz {
     }
     
     // Constructor que crea una matriz a partir de un vector de Vector
-    public Matriz(ArrayList<Vector> vectors) {
+    public Matriz(List<Vector> vectors) {
     	this(vectors.size(), vectors.get(0).size());
         // Verificar si el ArrayList está vacío
         if (vectors == null || vectors.isEmpty()) {
@@ -68,12 +69,12 @@ public class Matriz {
         }
     }
     
-    public static Matriz multiply(Matriz A, Matriz B) {
-        if (A.getNumCols() != B.getNumRows())  throw new IllegalArgumentException("Número de columnas de A no coincide con el número de filas de B");
-        Matriz result = new Matriz(A.getNumRows(), B.getNumCols());
-        for (int i = 0; i < A.getNumRows(); i++) {
-            for (int j = 0; j < B.getNumCols(); j++) {
-                double value = A.matrix.get(i).productoEscalar(getColumn(B.matrix, j));
+    public static Matriz multiply(Matriz a, Matriz b) {
+        if (a.getNumCols() != b.getNumRows())  throw new IllegalArgumentException("Número de columnas de A no coincide con el número de filas de B");
+        Matriz result = new Matriz(a.getNumRows(), b.getNumCols());
+        for (int i = 0; i < a.getNumRows(); i++) {
+            for (int j = 0; j < b.getNumCols(); j++) {
+                double value = a.matrix.get(i).productoEscalar(getColumn(b.matrix, j));
                 Vector aux = result.matrix.get(i);
                 aux.set(j, value);
                 result.matrix.set(i, aux);
@@ -83,7 +84,7 @@ public class Matriz {
     }
     
     // Método auxiliar para obtener una columna de una matriz
-    private static Vector getColumn(ArrayList<Vector> matrix, int colIndex) {
+    private static Vector getColumn(List<Vector> matrix, int colIndex) {
         Vector column = new Vector();
         for (int i = 0; i < matrix.size(); i++) {
             column.add(matrix.get(i).get(colIndex));
@@ -91,7 +92,7 @@ public class Matriz {
         return column;
     }
     
-    public Matriz read(String filename) throws FileNotFoundException, IOException {
+    public Matriz read(String filename) throws IOException {
     	try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             int m = Integer.parseInt(reader.readLine());
             int n = Integer.parseInt(reader.readLine());
@@ -129,7 +130,7 @@ public class Matriz {
             return false;
         }
         for (int i = 0; i < numRows; i++) {
-            if (this.matrix.get(i).equals(other.matrix.get(i)) == false) {
+            if (!this.matrix.get(i).equals(other.matrix.get(i))) {
                 return false;
             }
         }
@@ -166,17 +167,17 @@ public class Matriz {
     	this.deleteRows(indice);
     }
     
-    public void addRows(Vector valores) {
+    public void addRows() {
     	this.numRows += 1;
     }
     
-    public void addCols(Vector valores) {
+    public void addCols() {
     	this.numCols += 1;
     }
     
-    public ArrayList<Vector> Normalizar(){
+    public List<Vector> normalizar(){
     	this.transpose();
-    	ArrayList<Vector> nueva = this.matrix;
+    	List<Vector> nueva = this.matrix;
     	for (Vector fila: nueva) fila.normalize();
     	this.transpose();
     	return nueva;
