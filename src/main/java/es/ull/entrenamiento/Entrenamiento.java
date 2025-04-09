@@ -15,6 +15,7 @@ public class Entrenamiento {
 	private Dataset train;
 	private Dataset test;
 	private List<String> clases;
+	private static final String REPORT_SEPARATOR = "-------------------------";
 	
 	public Entrenamiento() {
 	}
@@ -88,12 +89,12 @@ public class Entrenamiento {
 
 		Logger logger = LoggerFactory.getLogger(Entrenamiento.class);
 		if (logger.isInfoEnabled()) {
-			double precisionGlobal = (double) aciertos / test.numeroCasos() * 100;
+			double precisionGlobal = aciertos / test.numeroCasos() * 100;
 			logger.info("Precisión global: {} / {} = {}%", aciertos, test.numeroCasos(), String.format("%.2f", precisionGlobal));
 
 			// Calcular y loguear las métricas adicionales
 			Map<String, Map<String, Integer>> resultadosPorClase = calcularResultadosPorClase(clasesReales, predicciones, clases);
-			imprimirReporteClasificacion(resultadosPorClase, test.numeroCasos(), logger);
+			imprimirReporteClasificacion(resultadosPorClase, logger);
 		}
 	}
 
@@ -123,63 +124,67 @@ public class Entrenamiento {
 		return resultados;
 	}
 
-	private void imprimirReporteClasificacion(Map<String, Map<String, Integer>> resultados, int totalInstancias, Logger logger) {
+	private void imprimirReporteClasificacion(Map<String, Map<String, Integer>> resultados, Logger logger) {
 		logger.info("\nReporte de Clasificación:");
-		logger.info("-------------------------");
+		logger.info(REPORT_SEPARATOR);
+
+		double[] macroMetrics = calcularMacroMetrics(resultados);
+		logger.info(String.format("Precisión Macro Promedio: %.2f%%", macroMetrics[0] * 100));
+		logger.info(String.format("Exhaustividad Macro Promedio: %.2f%%", macroMetrics[1] * 100));
+		logger.info(String.format("F1-score Macro Promedio: %.2f%%", macroMetrics[2] * 100));
+
+		double[] weightedMetrics = calcularWeightedMetrics(resultados);
+		logger.info(String.format("Precisión Ponderada: %.2f%%", weightedMetrics[0] * 100));
+		logger.info(String.format("Exhaustividad Ponderada: %.2f%%", weightedMetrics[1] * 100));
+		logger.info(String.format("F1-score Ponderado: %.2f%%", weightedMetrics[2] * 100));
+
+		logger.info(REPORT_SEPARATOR);
+	}
+
+	private double[] calcularMetricasClase(int tp, int fp, int fn) {
+		double precision = (tp + fp == 0) ? 0 : (double) tp / (tp + fp);
+		double recall = (tp + fn == 0) ? 0 : (double) tp / (tp + fn);
+		double f1 = (precision == 0 || recall == 0) ? 0 : 2 * (precision * recall) / (precision + recall);
+		return new double[]{precision, recall, f1};
+	}
+
+	private double[] calcularMacroMetrics(Map<String, Map<String, Integer>> resultados) {
 		double precisionMacro = 0;
 		double recallMacro = 0;
 		double f1Macro = 0;
-		int totalSupport = 0;
-
 		for (Map.Entry<String, Map<String, Integer>> entry : resultados.entrySet()) {
-			String clase = entry.getKey();
-			int tp = entry.getValue().get("TP");
-			int fp = entry.getValue().get("FP");
-			int fn = entry.getValue().get("FN");
-			int support = tp + fn; // Número real de instancias de esta clase
-			totalSupport += support;
+			double[] metrics = calcularMetricasClase(entry.getValue().get("TP"), entry.getValue().get("FP"), entry.getValue().get("FN"));
+			precisionMacro += metrics[0];
+			recallMacro += metrics[1];
+			f1Macro += metrics[2];
+			Logger logger = LoggerFactory.getLogger(Entrenamiento.class);
+			if (logger.isInfoEnabled()) {
+				logger.info(String.format("Clase %s: Precisión = %.2f, Exhaustividad = %.2f, F1-score = %.2f, Support = %d",
+						entry.getKey(), metrics[0] * 100, metrics[1] * 100, metrics[2] * 100, entry.getValue().get("TP") + entry.getValue().get("FN")));			}
 
-			double precision = (tp + fp == 0) ? 0 : (double) tp / (tp + fp);
-			double recall = (tp + fn == 0) ? 0 : (double) tp / (tp + fn);
-			double f1 = (precision == 0 || recall == 0) ? 0 : 2 * (precision * recall) / (precision + recall);
-
-			logger.info(String.format("Clase %s: Precisión = %.2f, Exhaustividad = %.2f, F1-score = %.2f, Support = %d",
-					clase, precision * 100, recall * 100, f1 * 100, support));
-
-			precisionMacro += precision;
-			recallMacro += recall;
-			f1Macro += f1;
 		}
+		return new double[]{precisionMacro / resultados.size(), recallMacro / resultados.size(), f1Macro / resultados.size()};
+	}
 
-		precisionMacro /= resultados.size();
-		recallMacro /= resultados.size();
-		f1Macro /= resultados.size();
-
-		logger.info("-------------------------");
-		logger.info(String.format("Precisión Macro Promedio: %.2f%%", precisionMacro * 100));
-		logger.info(String.format("Exhaustividad Macro Promedio: %.2f%%", recallMacro * 100));
-		logger.info(String.format("F1-score Macro Promedio: %.2f%%", f1Macro * 100));
-
-		// Calcular métricas ponderadas por el soporte
+	private double[] calcularWeightedMetrics(Map<String, Map<String, Integer>> resultados) {
 		double precisionPonderada = 0;
 		double recallPonderada = 0;
 		double f1Ponderada = 0;
+		int totalSupport = 0;
 		for (Map.Entry<String, Map<String, Integer>> entry : resultados.entrySet()) {
 			int tp = entry.getValue().get("TP");
 			int fp = entry.getValue().get("FP");
 			int fn = entry.getValue().get("FN");
 			int support = tp + fn;
-			double precision = (tp + fp == 0) ? 0 : (double) tp / (tp + fp);
-			double recall = (tp + fn == 0) ? 0 : (double) tp / (tp + fn);
-			double f1 = (precision == 0 || recall == 0) ? 0 : 2 * (precision * recall) / (precision + recall);
-			precisionPonderada += precision * support;
-			recallPonderada += recall * support;
-			f1Ponderada += f1 * support;
+			totalSupport += support;
+			double[] metrics = calcularMetricasClase(tp, fp, fn);
+			precisionPonderada += metrics[0] * support;
+			recallPonderada += metrics[1] * support;
+			f1Ponderada += metrics[2] * support;
 		}
-		logger.info(String.format("Precisión Ponderada: %.2f%%", (totalSupport == 0) ? 0 : (precisionPonderada / totalSupport) * 100));
-		logger.info(String.format("Exhaustividad Ponderada: %.2f%%", (totalSupport == 0) ? 0 : (recallPonderada / totalSupport) * 100));
-		logger.info(String.format("F1-score Ponderado: %.2f%%", (totalSupport == 0) ? 0 : (f1Ponderada / totalSupport) * 100));
-		logger.info("-------------------------");
+		return new double[]{(totalSupport == 0) ? 0 : precisionPonderada / totalSupport,
+				(totalSupport == 0) ? 0 : recallPonderada / totalSupport,
+				(totalSupport == 0) ? 0 : f1Ponderada / totalSupport};
 	}
 	
 	public void generarMatriz(int valorK) {

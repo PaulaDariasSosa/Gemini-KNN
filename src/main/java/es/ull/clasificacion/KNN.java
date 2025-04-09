@@ -2,6 +2,8 @@ package clasificacion;
 
 import datos.Dataset;
 import datos.Instancia;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import vectores.Vector;
 
 import java.util.*;
@@ -32,7 +34,10 @@ public class KNN {
 						vecinos.poll(); // Mantener solo los k vecinos más cercanos
 					}
 				} else {
-					System.err.println("Error: La lista de pesos no es válida o su tamaño no coincide con el número de atributos.");
+					Logger logger = LoggerFactory.getLogger(KNN.class);
+					if (logger.isErrorEnabled()) {
+						logger.error("Error: La lista de pesos no es válida o su tamaño no coincide con el número de atributos.");
+					}
 				}
 			}
 		}
@@ -42,7 +47,10 @@ public class KNN {
 
 	private double calcularDistanciaEuclideaCuadrada(Vector v1, Vector v2, java.util.List<Double> pesos) {
 		if (v1 == null || v2 == null || pesos == null || v1.size() != v2.size() || v1.size() != pesos.size()) {
-			System.err.println("Error al calcular la distancia: Los vectores y la lista de pesos deben ser no nulos y tener el mismo tamaño para calcular la distancia euclídea ponderada.");
+			Logger logger = LoggerFactory.getLogger(KNN.class);
+			if (logger.isErrorEnabled()) {
+				logger.error("Error: Los vectores y la lista de pesos deben ser no nulos y tener el mismo tamaño para calcular la distancia euclídea ponderada.");
+			}
 			return Double.MAX_VALUE;
 		}
 		double distanciaCuadrada = 0;

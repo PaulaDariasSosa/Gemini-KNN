@@ -89,110 +89,6 @@ public class Matriz {
         }
     }
 
-    public static Matriz multiply(Matriz a, Matriz b) {
-        if (a == null || b == null) {
-            throw new IllegalArgumentException("Las matrices de entrada no pueden ser nulas.");
-        }
-        if (a.getNumCols() != b.getNumRows()) {
-            throw new IllegalArgumentException("Número de columnas de la matriz A (" + a.getNumCols() + ") no coincide con el número de filas de la matriz B (" + b.getNumRows() + ").");
-        }
-
-        int n = a.getNumRows();
-        int m = a.getNumCols(); // También es el número de filas de b
-        int p = b.getNumCols();
-        Matriz result = new Matriz(n, p);
-        int blockSize = 32; // Tamaño de bloque - ¡ajustar según el rendimiento!
-
-        for (int i = 0; i < n; i += blockSize) {
-            for (int j = 0; j < p; j += blockSize) {
-                for (int k = 0; k < m; k += blockSize) {
-                    for (int ii = i; ii < Math.min(i + blockSize, n); ii++) {
-                        if (a.matrix.get(ii) == null) continue;
-                        for (int jj = j; jj < Math.min(j + blockSize, p); jj++) {
-                            Vector rowA = a.matrix.get(ii);
-                            for (int kk = k; kk < Math.min(k + blockSize, m); kk++) {
-                                double a_ik = rowA.get(kk);
-                                Vector rowResult = result.matrix.get(ii);
-                                try {
-                                    rowResult.set(jj, rowResult.get(jj) + a_ik * b.get(kk, jj));
-                                } catch (Exception e) {
-                                    logger.error("Error al multiplicar por bloques ({}, {}, {}): {}", ii, jj, kk, e.getMessage());
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    // Método auxiliar para obtener una columna de una matriz
-    private static Vector getColumn(List<Vector> matrix, int colIndex) {
-        if (matrix == null || matrix.isEmpty() || colIndex < 0 || colIndex >= matrix.get(0).size()) {
-            logger.error("Error al obtener la columna {}. Matriz nula o índice fuera de rango.", colIndex);
-            return null; // O lanzar una excepción
-        }
-        Vector column = new Vector();
-        for (Vector row : matrix) {
-            if (row != null) {
-                try {
-                    column.add(row.get(colIndex));
-                } catch (IndexOutOfBoundsException e) {
-                    logger.error("Error de índice al obtener elemento de la columna {}: {}", colIndex, e.getMessage());
-                    column.add(Double.NaN); // O manejar de otra manera
-                }
-            } else {
-                logger.warn("Fila nula encontrada al obtener la columna {}.", colIndex);
-                column.add(Double.NaN);
-            }
-        }
-        return column;
-    }
-
-    public Matriz read(String filename) throws IOException {
-        if (filename == null || filename.isEmpty()) {
-            throw new IllegalArgumentException("El nombre del archivo no puede ser nulo o vacío.");
-        }
-        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-            String lineRows = reader.readLine();
-            String lineCols = reader.readLine();
-            if (lineRows == null || lineCols == null) {
-                throw new IOException("El archivo no contiene la información de dimensiones de la matriz.");
-            }
-            int m = Integer.parseInt(lineRows);
-            int n = Integer.parseInt(lineCols);
-            if (m <= 0 || n <= 0) {
-                throw new IOException("Las dimensiones de la matriz leídas del archivo no son válidas.");
-            }
-            double[][] coef = new double[m][n];
-            for (int i = 0; i < m; i++) {
-                String lineValues = reader.readLine();
-                if (lineValues == null) {
-                    throw new IOException("El archivo no contiene suficientes filas para la matriz.");
-                }
-                String[] lineValuesArray = lineValues.split(" ");
-                if (lineValuesArray.length != n) {
-                    throw new IOException("El número de valores en la fila " + (i + 1) + " no coincide con el número de columnas esperado.");
-                }
-                for (int j = 0; j < n; j++) {
-                    try {
-                        coef[i][j] = Double.parseDouble(lineValuesArray[j]);
-                    } catch (NumberFormatException e) {
-                        throw new IOException("Valor no numérico encontrado en la fila " + (i + 1) + ", columna " + (j + 1) + ": " + lineValuesArray[j], e);
-                    }
-                }
-            }
-            return new Matriz(m, n, coef);
-        } catch (FileNotFoundException e) {
-            throw new FileNotFoundException("Archivo no encontrado: " + filename);
-        } catch (IOException e) {
-            throw new IOException("Error al leer el archivo " + filename + ": " + e.getMessage(), e);
-        } catch (NumberFormatException e) {
-            throw new IOException("Formato incorrecto en las dimensiones de la matriz en el archivo " + filename + ": " + e.getMessage(), e);
-        }
-    }
-
     // Método para escribir los datos de la matriz en un archivo de texto
     public void write(String filename) throws IOException {
         if (filename == null || filename.isEmpty()) {
@@ -239,7 +135,7 @@ public class Matriz {
             matrix.set(i, fila);
         } catch (IndexOutOfBoundsException e) {
             logger.error("Error al establecer el valor en la matriz ({}, {}): {}", i, j, e.getMessage());
-            throw e;
+            throw new IndexOutOfBoundsException("Índices (" + i + ", " + j + ") fuera del rango de la matriz [" + numRows + "x" + numCols + "].");
         }
     }
 

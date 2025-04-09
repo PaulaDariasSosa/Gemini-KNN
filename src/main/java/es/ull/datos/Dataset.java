@@ -1,5 +1,8 @@
 package datos;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -7,7 +10,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class Dataset {
 	private List<Atributo> atributos;
@@ -67,8 +69,8 @@ public class Dataset {
 	
 	// Print
 	public void print() {
-		Logger logger = Logger.getLogger(Dataset.class.getName());
-		if (logger.isLoggable(java.util.logging.Level.INFO)) {
+		Logger logger = LoggerFactory.getLogger(Dataset.class.getName());
+		if (logger.isInfoEnabled()) {
 			logger.info(this.toString());
 		}
 	}
@@ -232,15 +234,20 @@ public class Dataset {
 	 */
 	public List<Double> getPesosDouble() {
 		List<Double> pesosDouble = new ArrayList<>();
-		for(int i = 0; i < atributos.size()-1; ++i) {
+		for (int i = 0; i < atributos.size() - 1; ++i) {
 			try {
 				pesosDouble.add(atributos.get(i).getPeso());
 			} catch (NumberFormatException e) {
-				System.err.println("Error al convertir el peso del atributo " + atributos.get(i).getNombre() + ": " + e.getMessage());
-				return null;
+				Logger logger = LoggerFactory.getLogger(Dataset.class);
+				if (logger.isErrorEnabled()) {
+					logger.error("Error al convertir el peso del atributo " + atributos.get(i).getNombre() + ": " + e.getMessage());
+				}
+				// En lugar de retornar null, seguimos añadiendo los pesos válidos y logueamos el error.
+				// Otra opción sería añadir un valor por defecto (e.g., 1.0) si la conversión falla,
+				// dependiendo de cómo quieras manejar los pesos no válidos.
 			}
 		}
-		return pesosDouble;
+		return pesosDouble; // Retornamos la lista, que podría estar vacía o contener algunos pesos válidos.
 	}
 	
 	public List<String> getClases() {

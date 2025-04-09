@@ -110,7 +110,7 @@ public class KnnTfg {
 			datos = preprocesar(datos);
 		} catch (IOException e) {
 			logger.error("Error al cargar el dataset desde {}{}: {}", ruta, archivo, e.getMessage());
-			throw e; // Relanzar la excepción para que sea manejada en procesarOpcion
+			throw new IOException("Error al cargar el dataset"); // Relanzar la excepción para que sea manejada en procesarOpcion
 		}
 	}
 
@@ -122,7 +122,7 @@ public class KnnTfg {
 			logger.info("Dataset guardado en {}{}", ruta, archivo);
 		} catch (IOException e) {
 			logger.error("Error al guardar el dataset en {}{}: {}", ruta, archivo, e.getMessage());
-			throw e; // Relanzar la excepción
+			throw new IOException("Error al guardar el dataset"); // Relanzar la excepción
 		}
 	}
 
@@ -151,7 +151,7 @@ public class KnnTfg {
 			experimentar(datos);
 		} catch (IOException e) {
 			logger.error("Error durante la experimentación: {}", e.getMessage());
-			throw e; // Relanzar la excepción
+			throw new IOException("Error durante la experimentación"); // Relanzar la excepción
 		}
 	}
 
@@ -542,7 +542,6 @@ public class KnnTfg {
 		logger.info("               [3] Mostrar clases");
 		logger.info("               [4] Mostrar frecuencia");
 		int opcion = -1;
-		Scanner scannerLocal = new Scanner(System.in); // Using the global scanner
 		try {
 			opcion = scanner.nextInt();
 			logger.info("Introduce el índice del atributo cualitativo:");
