@@ -1,99 +1,90 @@
 package clasificacion;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import datos.*;
+import datos.Dataset;
+import datos.Instancia;
 import vectores.Vector;
 
+import java.util.*;
+
 public class KNN {
-  private int vecinos;
-  
-  public KNN (int k) {
-	  this.vecinos = k;
-  }
-  
-  public Vector getDistancias(Dataset datos, Instancia nueva){
-	Vector aux = new Vector();
-	// obtenemos el peso de los atributos 
-	ArrayList<Atributo>  pesosString = new ArrayList<>(datos.getAtributos());
-	ArrayList<Double> pesosDouble = new ArrayList<>();
-	for (Atributo str : pesosString) {
-        pesosDouble.add(str.getPeso());
-    }
-    for (int i = 0; i < datos.numeroCasos(); ++i) {
-    	aux.add(this.getDistanciaEuclidea(datos.getInstance(i).getVector(), nueva.getVector(), pesosDouble));
-    }
-    return aux;
-  }
-  
-  public String getClase (List<Instancia> candidatos) {
-	  ArrayList<String> nombresClases = new ArrayList<>();
-	  for (int i = 0; i < candidatos.size(); i++) {
-		  if (!nombresClases.contains(candidatos.get(i).getClase())) nombresClases.add(candidatos.get(i).getClase());
-	  }
-	  ArrayList<Integer> numeroClases = new ArrayList<>();
-	  for (int i = 0; i < nombresClases.size(); i++) {
-		  int aux = 0;
-		  for (int j = 0; j < candidatos.size();++j) {
-			  if (candidatos.get(j).getClase().equals(nombresClases.get(i))) aux += 1;
-		  }
-		  numeroClases.add(aux);
-	  }
-	  return nombresClases.get(numeroClases.indexOf(Collections.max(numeroClases)));
-			  
-  }
-  
-  public double getDistanciaEuclidea(Vector vieja, Vector nueva) {
-	  if (vieja.size() == nueva.size()) {
-		  throw new IllegalArgumentException("Los vectores deben tener distinto tamaño para calcular la distancia euclídea.");
-	  }
-	double dist = 0.0;
-	for(int i = 0; i < nueva.size(); i++) {
-		dist += Math.pow((vieja.get(i) - nueva.get(i)), 2);
+	private int k;
+
+	public KNN(int k) {
+		this.k = k;
 	}
-	return Math.sqrt(dist);
-  }
-  
-  public double getDistanciaEuclidea(Vector vieja, Vector nueva, List<Double> pesos) {
-	  if (vieja.size() == nueva.size()) {
-		  throw new IllegalArgumentException("Los vectores deben tener distinto tamaño para calcular la distancia euclídea.");
-	  }
-		double dist = 0.0;
-		for(int i = 0; i < nueva.size(); i++) {
-			dist += Math.pow((vieja.get(i) - nueva.get(i))*pesos.get(i), 2);
+
+	public String clasificar(Dataset entrenamiento, Instancia prueba) {
+		if (entrenamiento == null || entrenamiento.numeroCasos() == 0 || prueba == null || prueba.getVector() == null) {
+			return null;
 		}
-		return Math.sqrt(dist);
-	  }
-  
-  public String getVecino(List<Instancia> candidatos, Vector distancias){
-	  Vector aux = new Vector();
-	  ArrayList<Integer> indices = new ArrayList<>();
-	  for (int i = 0; i < vecinos; i++) {
-		  aux.add(distancias.get(i));
-		  indices.add(i);
-	  }
-	  // metemos los k primeros elementos en un vector
-	  for (int i = 0+vecinos-1; i < candidatos.size(); ++i) {
-		// si el elemento mayor del vector tiene 
-		if (aux.getMax() > distancias.get(i)) {
-			// sacar el mayor y meter el nuevo
-			aux.set(aux.getMaxInt(), distancias.get(i));
-			indices.set(aux.getMaxInt(), i);
+
+		PriorityQueue<Vecino> vecinos = new PriorityQueue<>(k, Comparator.comparingDouble(Vecino::getDistancia).reversed());
+		for (int i = 0; i < entrenamiento.numeroCasos(); i++) {
+			Instancia instanciaEntrenamiento = entrenamiento.getInstance(i);
+			if (instanciaEntrenamiento.getVector() != null) {
+				List<Double> pesosDouble = entrenamiento.getPesosDouble();
+				if (pesosDouble != null && pesosDouble.size() == prueba.getVector().size()) {
+					double distancia = calcularDistanciaEuclideaCuadrada(prueba.getVector(), instanciaEntrenamiento.getVector(), pesosDouble);
+					String clase = instanciaEntrenamiento.getClase();
+					vecinos.offer(new Vecino(distancia, clase));
+					if (vecinos.size() > k) {
+						// Eliminar el vecino más lejano si hay más de k vecinos
+						vecinos.poll(); // Mantener solo los k vecinos más cercanos
+					}
+				} else {
+					System.err.println("Error: La lista de pesos no es válida o su tamaño no coincide con el número de atributos.");
+				}
+			}
 		}
-	  }
-	  ArrayList<Instancia> elegidos = new ArrayList<>();
-	  for (int i = 0; i < indices.size(); i++) elegidos.add(candidatos.get(indices.get(i)));
-	  return this.getClase(elegidos);
-  }
-  
-  public String clasificar(Dataset datos, Instancia nueva) {
-	  Vector aux = this.getDistancias(datos, nueva);
-	  ArrayList<Instancia> elegidos = new ArrayList<>();
-	  for (int i = 0; i < datos.numeroCasos(); ++i) {
-	    elegidos.add(datos.getInstance(i));
-	  }
-	  return this.getVecino(elegidos, aux);
-  }
+
+		return obtenerClaseMayoritaria(vecinos);
+	}
+
+	private double calcularDistanciaEuclideaCuadrada(Vector v1, Vector v2, java.util.List<Double> pesos) {
+		if (v1 == null || v2 == null || pesos == null || v1.size() != v2.size() || v1.size() != pesos.size()) {
+			System.err.println("Error al calcular la distancia: Los vectores y la lista de pesos deben ser no nulos y tener el mismo tamaño para calcular la distancia euclídea ponderada.");
+			return Double.MAX_VALUE;
+		}
+		double distanciaCuadrada = 0;
+		for (int i = 0; i < v1.size(); i++) {
+			double diferencia = v1.get(i) - v2.get(i);
+			distanciaCuadrada += pesos.get(i) * diferencia * diferencia;
+		}
+		return distanciaCuadrada;
+	}
+
+	private String obtenerClaseMayoritaria(PriorityQueue<Vecino> vecinos) {
+		Map<String, Integer> conteoClases = new HashMap<>();
+		for (Vecino vecino : vecinos) {
+			conteoClases.put(vecino.getClase(), conteoClases.getOrDefault(vecino.getClase(), 0) + 1);
+		}
+
+		String claseMayoritaria = null;
+		int maxConteo = -1;
+		for (Map.Entry<String, Integer> entry : conteoClases.entrySet()) {
+			if (entry.getValue() > maxConteo) {
+				maxConteo = entry.getValue();
+				claseMayoritaria = entry.getKey();
+			}
+		}
+		return claseMayoritaria;
+	}
+
+	private static class Vecino {
+		private double distancia;
+		private String clase;
+
+		public Vecino(double distancia, String clase) {
+			this.distancia = distancia;
+			this.clase = clase;
+		}
+
+		public double getDistancia() {
+			return distancia;
+		}
+
+		public String getClase() {
+			return clase;
+		}
+	}
 }

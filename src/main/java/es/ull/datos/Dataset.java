@@ -223,6 +223,25 @@ public class Dataset {
 		for (Atributo valor : this.atributos) valores.add(valor.get());
 		return valores;
 	}
+
+	/**
+	 * Obtiene los pesos de los atributos como una lista de Double.
+	 * Si hay errores en la conversión, se loguea y se devuelve null.
+	 *
+	 * @return Una lista de Double con los pesos de los atributos, o null si hay un error.
+	 */
+	public List<Double> getPesosDouble() {
+		List<Double> pesosDouble = new ArrayList<>();
+		for(int i = 0; i < atributos.size()-1; ++i) {
+			try {
+				pesosDouble.add(atributos.get(i).getPeso());
+			} catch (NumberFormatException e) {
+				System.err.println("Error al convertir el peso del atributo " + atributos.get(i).getNombre() + ": " + e.getMessage());
+				return null;
+			}
+		}
+		return pesosDouble;
+	}
 	
 	public List<String> getClases() {
 		return ((Cualitativo) this.atributos.get(atributos.size()-1)).clases();

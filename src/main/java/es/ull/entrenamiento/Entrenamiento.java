@@ -64,25 +64,122 @@ public class Entrenamiento {
 		this.test.setPreprocesado(datos.getPreprocesado());
 		this.train.setPreprocesado(datos.getPreprocesado());
 	}
-	
+
 	public void generarPrediccion(int valorK) {
 		Dataset pruebas = new Dataset(test);
+		List<String> predicciones = new ArrayList<>();
+		List<String> clasesReales = new ArrayList<>();
 		Double aciertos = 0.0;
+
 		for (int i = 0; i < pruebas.numeroCasos(); ++i) {
 			ArrayList<Object> instance = new ArrayList<>();
-			for (int j = 0; j < pruebas.numeroAtributos()-1; ++j) {
+			for (int j = 0; j < pruebas.numeroAtributos(); ++j) {
 				instance.add(pruebas.getInstance(i).getValores().get(j));
 			}
 			Instancia nueva = new Instancia(instance);
-			String clase = (new KNN(valorK).clasificar(train, nueva));
-			if (clase.equals(test.getInstance(i).getClase())) aciertos += 1;
+			String clasePredicha = (new KNN(valorK).clasificar(train, nueva));
+			predicciones.add(clasePredicha);
+			clasesReales.add(test.getInstance(i).getClase());
+
+			if (clasePredicha != null && clasePredicha.equals(test.getInstance(i).getClase())) {
+				aciertos += 1;
+			}
 		}
+
 		Logger logger = LoggerFactory.getLogger(Entrenamiento.class);
 		if (logger.isInfoEnabled()) {
-			double precision = aciertos / test.numeroCasos() * 100;
-			logger.info("La precisión predictiva: {} / {} = {}%", aciertos, test.numeroCasos(), String.format("%.2f", precision));
+			double precisionGlobal = (double) aciertos / test.numeroCasos() * 100;
+			logger.info("Precisión global: {} / {} = {}%", aciertos, test.numeroCasos(), String.format("%.2f", precisionGlobal));
+
+			// Calcular y loguear las métricas adicionales
+			Map<String, Map<String, Integer>> resultadosPorClase = calcularResultadosPorClase(clasesReales, predicciones, clases);
+			imprimirReporteClasificacion(resultadosPorClase, test.numeroCasos(), logger);
 		}
-		
+	}
+
+	private Map<String, Map<String, Integer>> calcularResultadosPorClase(List<String> reales, List<String> predichas, List<String> etiquetasClase) {
+		Map<String, Map<String, Integer>> resultados = new HashMap<>();
+		for (String clase : etiquetasClase) {
+			resultados.put(clase, new HashMap<>());
+			resultados.get(clase).put("TP", 0);
+			resultados.get(clase).put("FP", 0);
+			resultados.get(clase).put("FN", 0);
+		}
+
+		for (int i = 0; i < reales.size(); i++) {
+			String real = reales.get(i);
+			String predicha = predichas.get(i);
+
+			for (String clase : etiquetasClase) {
+				if (real.equals(clase) && predicha.equals(clase)) {
+					resultados.get(clase).put("TP", resultados.get(clase).get("TP") + 1);
+				} else if (!real.equals(clase) && predicha.equals(clase)) {
+					resultados.get(clase).put("FP", resultados.get(clase).get("FP") + 1);
+				} else if (real.equals(clase) && !predicha.equals(clase)) {
+					resultados.get(clase).put("FN", resultados.get(clase).get("FN") + 1);
+				}
+			}
+		}
+		return resultados;
+	}
+
+	private void imprimirReporteClasificacion(Map<String, Map<String, Integer>> resultados, int totalInstancias, Logger logger) {
+		logger.info("\nReporte de Clasificación:");
+		logger.info("-------------------------");
+		double precisionMacro = 0;
+		double recallMacro = 0;
+		double f1Macro = 0;
+		int totalSupport = 0;
+
+		for (Map.Entry<String, Map<String, Integer>> entry : resultados.entrySet()) {
+			String clase = entry.getKey();
+			int tp = entry.getValue().get("TP");
+			int fp = entry.getValue().get("FP");
+			int fn = entry.getValue().get("FN");
+			int support = tp + fn; // Número real de instancias de esta clase
+			totalSupport += support;
+
+			double precision = (tp + fp == 0) ? 0 : (double) tp / (tp + fp);
+			double recall = (tp + fn == 0) ? 0 : (double) tp / (tp + fn);
+			double f1 = (precision == 0 || recall == 0) ? 0 : 2 * (precision * recall) / (precision + recall);
+
+			logger.info(String.format("Clase %s: Precisión = %.2f, Exhaustividad = %.2f, F1-score = %.2f, Support = %d",
+					clase, precision * 100, recall * 100, f1 * 100, support));
+
+			precisionMacro += precision;
+			recallMacro += recall;
+			f1Macro += f1;
+		}
+
+		precisionMacro /= resultados.size();
+		recallMacro /= resultados.size();
+		f1Macro /= resultados.size();
+
+		logger.info("-------------------------");
+		logger.info(String.format("Precisión Macro Promedio: %.2f%%", precisionMacro * 100));
+		logger.info(String.format("Exhaustividad Macro Promedio: %.2f%%", recallMacro * 100));
+		logger.info(String.format("F1-score Macro Promedio: %.2f%%", f1Macro * 100));
+
+		// Calcular métricas ponderadas por el soporte
+		double precisionPonderada = 0;
+		double recallPonderada = 0;
+		double f1Ponderada = 0;
+		for (Map.Entry<String, Map<String, Integer>> entry : resultados.entrySet()) {
+			int tp = entry.getValue().get("TP");
+			int fp = entry.getValue().get("FP");
+			int fn = entry.getValue().get("FN");
+			int support = tp + fn;
+			double precision = (tp + fp == 0) ? 0 : (double) tp / (tp + fp);
+			double recall = (tp + fn == 0) ? 0 : (double) tp / (tp + fn);
+			double f1 = (precision == 0 || recall == 0) ? 0 : 2 * (precision * recall) / (precision + recall);
+			precisionPonderada += precision * support;
+			recallPonderada += recall * support;
+			f1Ponderada += f1 * support;
+		}
+		logger.info(String.format("Precisión Ponderada: %.2f%%", (totalSupport == 0) ? 0 : (precisionPonderada / totalSupport) * 100));
+		logger.info(String.format("Exhaustividad Ponderada: %.2f%%", (totalSupport == 0) ? 0 : (recallPonderada / totalSupport) * 100));
+		logger.info(String.format("F1-score Ponderado: %.2f%%", (totalSupport == 0) ? 0 : (f1Ponderada / totalSupport) * 100));
+		logger.info("-------------------------");
 	}
 	
 	public void generarMatriz(int valorK) {
@@ -90,7 +187,7 @@ public class Entrenamiento {
 		Matriz confusion = new Matriz (clases.size(), clases.size());
 		for (int i = 0; i < pruebas.numeroCasos(); ++i) {
 			ArrayList<Object> instance = new ArrayList<>();
-			for (int j = 0; j < pruebas.numeroAtributos()-1; ++j) {
+			for (int j = 0; j < pruebas.numeroAtributos(); ++j) {
 				instance.add(pruebas.getInstance(i).getValores().get(j));
 			}
 			Instancia nueva = new Instancia(instance);
