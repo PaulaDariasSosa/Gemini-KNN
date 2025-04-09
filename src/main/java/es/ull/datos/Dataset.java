@@ -240,7 +240,7 @@ public class Dataset {
 			} catch (NumberFormatException e) {
 				Logger logger = LoggerFactory.getLogger(Dataset.class);
 				if (logger.isErrorEnabled()) {
-					logger.error("Error al convertir el peso del atributo " + atributos.get(i).getNombre() + ": " + e.getMessage());
+					logger.error("Error al convertir el peso del atributo");
 				}
 				// En lugar de retornar null, seguimos añadiendo los pesos válidos y logueamos el error.
 				// Otra opción sería añadir un valor por defecto (e.g., 1.0) si la conversión falla,

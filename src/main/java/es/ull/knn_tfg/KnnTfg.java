@@ -19,6 +19,9 @@ public class KnnTfg {
 	private static final String MENSAJE_INTRODUCIR_K = "Introduce el valor de k: ";
 	private static final String MENSAJE_INTRODUCIR_VALORES = "Introduce los valores: ";
 	private static final String MENSAJE_INTRODUCIR_PORCENTAJE = "Introduzca el porcentaje para el conjunto de entrenamiento";
+	private static final String MENSAJE_INVALIDA_NUMERO = "Entrada inválida. Por favor, introduce un número.";
+	private static final String MENSAJE_OPCION_INVALIDA= "Opción inválida.";
+	private static final String MENSAJE_INDICE_RANGO= "Índice fuera de rango.";
 
 	private static Dataset datosCrudos = new Dataset();
 	private static Dataset datos = new Dataset();
@@ -54,7 +57,7 @@ public class KnnTfg {
 		try {
 			opcion = scanner.nextInt();
 		} catch (java.util.InputMismatchException e) {
-			logger.warn("Entrada inválida. Por favor, introduce un número.");
+			logger.warn(MENSAJE_INVALIDA_NUMERO);
 			scanner.next(); // Limpiar el buffer del scanner
 		}
 		scanner.nextLine(); // Consumir la nueva línea
@@ -238,10 +241,10 @@ public class KnnTfg {
 					case 4:
 						break;
 					default:
-						logger.warn("Opción inválida.");
+						logger.warn(MENSAJE_OPCION_INVALIDA);
 				}
 			} catch (java.util.InputMismatchException e) {
-				logger.warn("Entrada inválida. Por favor, introduce un número.");
+				logger.warn(MENSAJE_INVALIDA_NUMERO);
 				scanner.next(); // Limpiar el buffer
 				scanner.nextLine(); // Consume newline
 				opcion = -1; // Para que el bucle continúe
@@ -329,10 +332,10 @@ public class KnnTfg {
 					case 5:
 						break;
 					default:
-						logger.warn("Opción inválida.");
+						logger.warn(MENSAJE_OPCION_INVALIDA);
 				}
 			} catch (java.util.InputMismatchException e) {
-				logger.warn("Entrada inválida. Por favor, introduce un número.");
+				logger.warn(MENSAJE_INVALIDA_NUMERO);
 				scannerLocal.next(); // Limpiar el buffer
 				scannerLocal.nextLine(); // Consume newline
 				opcion = -1; // Para que el bucle continúe
@@ -425,10 +428,10 @@ public class KnnTfg {
 						logger.warn("Peso fuera del rango [0, 1]. No se modificará el peso.");
 					}
 					break;
-				default: logger.warn("Opción inválida.");
+				default: logger.warn(MENSAJE_OPCION_INVALIDA);
 			}
 		} catch (java.util.InputMismatchException e) {
-			logger.warn("Entrada inválida. Por favor, introduce un número.");
+			logger.warn(MENSAJE_INVALIDA_NUMERO);
 			scannerLocal.next(); // Limpiar el buffer
 			scannerLocal.nextLine(); // Consume newline
 		} catch (IllegalArgumentException e) {
@@ -478,14 +481,14 @@ public class KnnTfg {
 					}
 					break;
 				default:
-					logger.warn("Opción inválida.");
+					logger.warn(MENSAJE_OPCION_INVALIDA);
 			}
 		} catch (java.util.InputMismatchException e) {
-			logger.warn("Entrada inválida. Por favor, introduce un número.");
+			logger.warn(MENSAJE_INVALIDA_NUMERO);
 			scanner.next(); // Limpiar el buffer
 			scanner.nextLine(); // Consume newline
 		} catch (IndexOutOfBoundsException e) {
-			logger.warn("Índice fuera de rango.");
+			logger.warn(MENSAJE_INDICE_RANGO);
 		}
 	}
 
@@ -520,17 +523,17 @@ public class KnnTfg {
 						logger.info("Desviación típica: {}", auxiliar.desviacion());
 						break;
 					default:
-						logger.warn("Opción inválida.");
+						logger.warn(MENSAJE_OPCION_INVALIDA);
 				}
 			} else {
 				logger.warn("Índice de atributo inválido o no es cuantitativo.");
 			}
 		} catch (java.util.InputMismatchException e) {
-			logger.warn("Entrada inválida. Por favor, introduce un número.");
+			logger.warn(MENSAJE_INVALIDA_NUMERO);
 			scanner.next(); // Limpiar el buffer
 			scanner.nextLine(); // Consume newline
 		} catch (IndexOutOfBoundsException e) {
-			logger.warn("Índice fuera de rango.");
+			logger.warn(MENSAJE_INDICE_RANGO);
 		} catch (ClassCastException e) {
 			logger.warn("El atributo en ese índice no es cuantitativo.");
 		}
@@ -563,17 +566,17 @@ public class KnnTfg {
 						logger.info("Frecuencia: {}", auxiliar.frecuencia());
 						break;
 					default:
-						logger.warn("Opción inválida.");
+						logger.warn(MENSAJE_OPCION_INVALIDA);
 				}
 			} else {
 				logger.warn("Índice de atributo inválido o no es cualitativo.");
 			}
 		} catch (java.util.InputMismatchException e) {
-			logger.warn("Entrada inválida. Por favor, introduce un número.");
+			logger.warn(MENSAJE_INVALIDA_NUMERO);
 			scanner.next(); // Limpiar el buffer
 			scanner.nextLine(); // Consume newline
 		} catch (IndexOutOfBoundsException e) {
-			logger.warn("Índice fuera de rango.");
+			logger.warn(MENSAJE_INDICE_RANGO);
 		} catch (ClassCastException e) {
 			logger.warn("El atributo en ese índice no es cualitativo.");
 		}
@@ -647,11 +650,11 @@ public class KnnTfg {
 						logger.info("Saliendo de las opciones de experimentación.");
 						break;
 					default:
-						logger.warn("Opción inválida.");
+						logger.warn(MENSAJE_OPCION_INVALIDA);
 				}
 			}
 		} catch (java.util.InputMismatchException e) {
-			logger.warn("Entrada inválida. Por favor, introduce un número.");
+			logger.warn(MENSAJE_INVALIDA_NUMERO);
 			scanner.next(); // Limpiar el buffer
 			scanner.nextLine(); // Consume newline
 		} catch (IllegalArgumentException e) {
@@ -695,11 +698,11 @@ public class KnnTfg {
 					nuevo.generarMatriz(k);
 					return nuevo;
 				default:
-					logger.warn("Opción inválida.");
+					logger.warn(MENSAJE_OPCION_INVALIDA);
 					return nuevo;
 			}
 		} catch (java.util.InputMismatchException e) {
-			logger.warn("Entrada inválida. Por favor, introduce un número.");
+			logger.warn(MENSAJE_INVALIDA_NUMERO);
 			scanner.next(); // Limpiar el buffer
 			scanner.nextLine(); // Consume newline
 			return null; // Or handle error appropriately

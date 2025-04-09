@@ -92,7 +92,7 @@ public class Vector {
             } catch (NumberFormatException e) {
                 logger.error("Error al parsear un valor del string: {}", e.getMessage());
                 coef.clear(); // O podrías considerar añadir los valores válidos y omitir los inválidos
-                throw new IllegalArgumentException("El string contiene valores no numéricos.", e);
+                throw new NumberFormatException("El string contiene valores no numéricos");
             }
         } else if (str == null) {
             logger.warn("Se proporcionó un string nulo al constructor.");

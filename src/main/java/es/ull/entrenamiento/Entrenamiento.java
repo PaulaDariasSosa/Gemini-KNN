@@ -129,14 +129,19 @@ public class Entrenamiento {
 		logger.info(REPORT_SEPARATOR);
 
 		double[] macroMetrics = calcularMacroMetrics(resultados);
-		logger.info(String.format("Precisión Macro Promedio: %.2f%%", macroMetrics[0] * 100));
-		logger.info(String.format("Exhaustividad Macro Promedio: %.2f%%", macroMetrics[1] * 100));
-		logger.info(String.format("F1-score Macro Promedio: %.2f%%", macroMetrics[2] * 100));
+		if (logger.isInfoEnabled()) {
+			logger.info(String.format("Precisión Macro Promedio: %.2f%%", macroMetrics[0] * 100));
+			logger.info(String.format("Exhaustividad Macro Promedio: %.2f%%", macroMetrics[1] * 100));
+			logger.info(String.format("F1-score Macro Promedio: %.2f%%", macroMetrics[2] * 100));
+		}
+
 
 		double[] weightedMetrics = calcularWeightedMetrics(resultados);
-		logger.info(String.format("Precisión Ponderada: %.2f%%", weightedMetrics[0] * 100));
-		logger.info(String.format("Exhaustividad Ponderada: %.2f%%", weightedMetrics[1] * 100));
-		logger.info(String.format("F1-score Ponderado: %.2f%%", weightedMetrics[2] * 100));
+		if (logger.isInfoEnabled()) {
+			logger.info(String.format("Precisión Ponderada: %.2f%%", weightedMetrics[0] * 100));
+			logger.info(String.format("Exhaustividad Ponderada: %.2f%%", weightedMetrics[1] * 100));
+			logger.info(String.format("F1-score Ponderado: %.2f%%", weightedMetrics[2] * 100));
+		}
 
 		logger.info(REPORT_SEPARATOR);
 	}
