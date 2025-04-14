@@ -2,7 +2,6 @@ package knn_tfg;
 
 import java.io.IOException;
 import java.util.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,7 +109,7 @@ public class KnnTfg {
 			datos = preprocesar(datos);
 		} catch (IOException e) {
 			logger.error("Error al cargar el dataset desde {}{}: {}", ruta, archivo, e.getMessage());
-			throw new IOException("Error al cargar el dataset"); // Relanzar la excepción para que sea manejada en procesarOpcion
+			throw new IOException("Error al cargar el dataset desde fichero"); // Relanzar la excepción para que sea manejada en procesarOpcion
 		}
 	}
 
@@ -122,7 +121,7 @@ public class KnnTfg {
 			logger.info("Dataset guardado en {}{}", ruta, archivo);
 		} catch (IOException e) {
 			logger.error("Error al guardar el dataset en {}{}: {}", ruta, archivo, e.getMessage());
-			throw new IOException("Error al guardar el dataset"); // Relanzar la excepción
+			throw new IOException("Error al guardar el dataset en un fichero"); // Relanzar la excepción
 		}
 	}
 
@@ -722,9 +721,9 @@ public class KnnTfg {
 			switch (opcion) {
 				case 1:
 					logger.info(MENSAJE_INTRODUCIR_PORCENTAJE);
-					int valor = scanner.nextInt();
+					int valorExp = scanner.nextInt();
 					scanner.nextLine(); // Consume newline after reading the percentage
-					nuevo = new Entrenamiento(datos, (double) valor / 100, 1234);
+					nuevo = new Entrenamiento(datos, (double) valorExp / 100, 1234);
 					logger.info(MENSAJE_INTRODUCIR_K);
 					int k = scanner.nextInt();
 					scanner.nextLine(); // Consume newline after reading k
@@ -733,12 +732,12 @@ public class KnnTfg {
 					return nuevo;
 				case 2:
 					logger.info(MENSAJE_INTRODUCIR_PORCENTAJE);
-					valor = scanner.nextInt();
+					valorExp = scanner.nextInt();
 					scanner.nextLine(); // Consume newline after reading the percentage
 					logger.info("Introduzca la semilla para la generacion aleatoria");
 					int valor2 = scanner.nextInt();
 					scanner.nextLine(); // Consume newline after reading the seed
-					nuevo = new Entrenamiento(datos, (double) valor / 100, valor2);
+					nuevo = new Entrenamiento(datos, (double) valorExp / 100, valor2);
 					logger.info(MENSAJE_INTRODUCIR_K);
 					k = scanner.nextInt();
 					scanner.nextLine(); // Consume newline after reading k
