@@ -190,7 +190,7 @@ public class KnnTfg {
 	}
 
 	private static Instancia obtenerInstanciaParaClasificar() {
-		logger.info(MENSAJE_INTRODUCIR_VALORES);
+		logger.info("Introduce valores: ");
 		Scanner scanner1 = new Scanner(System.in);
 		String valoresString = scanner1.nextLine();
 		// convertir la cadena en una lista de valores
@@ -279,7 +279,7 @@ public class KnnTfg {
 					case 4:
 						break;
 					default:
-						logger.warn(MENSAJE_OPCION_INVALIDA);
+						logger.warn("Opción invalida.");
 				}
 			} catch (java.util.InputMismatchException e) {
 				logger.warn("Entrada inválida. Por favor, introduce un númerico.");
@@ -471,7 +471,7 @@ public class KnnTfg {
 						logger.warn("Peso fuera del rango [0, 1]. No se modificará el peso.");
 					}
 					break;
-				default: logger.warn(MENSAJE_OPCION_INVALIDA);
+				default: logger.warn("Opción no válida.");
 			}
 		} catch (java.util.InputMismatchException e) {
 			logger.warn(MENSAJE_INVALIDA_NUMERO);
@@ -522,7 +522,7 @@ public class KnnTfg {
 					}
 					break;
 				default:
-					logger.warn(MENSAJE_OPCION_INVALIDA);
+					logger.warn("Opción no válida.");
 			}
 		} catch (java.util.InputMismatchException e) {
 			logger.warn(MENSAJE_INVALIDA_NUMERO);
@@ -534,7 +534,7 @@ public class KnnTfg {
 	}
 
 	public static void infoCuantitativo(Dataset data) {
-		logger.info("               [1] Mostrar nombre ");
+		logger.info("               [1] Mostrar nombre del atributo");
 		logger.info("               [2] Mostrar media ");
 		logger.info("               [3] Mostrar maximo");
 		logger.info("               [4] Mostrar minimo");
@@ -549,7 +549,7 @@ public class KnnTfg {
 				Cuantitativo auxiliar = (Cuantitativo) data.get(valor);
 				switch (opcion) {
 					case 1:
-						logger.info("Nombre: {}", auxiliar.getNombre());
+						logger.info("Nombre del atributo: {}", auxiliar.getNombre());
 						break;
 					case 2:
 						logger.info("Media: {}", auxiliar.media());
@@ -650,7 +650,7 @@ public class KnnTfg {
 								nuevo.generarPrediccion(k);
 								nuevo.generarMatriz(k);
 							} else {
-								logger.warn("El valor de k debe ser mayor que cero.");
+								logger.warn("El valor de K debe ser mayor que cero.");
 							}
 						} else {
 							logger.warn("El porcentaje debe estar entre 1 y 100.");
@@ -718,7 +718,7 @@ public class KnnTfg {
 			Entrenamiento nuevo = new Entrenamiento();
 			switch (opcion) {
 				case 1:
-					logger.info(MENSAJE_INTRODUCIR_PORCENTAJE);
+					logger.info("Introduzca el porcentaje del conjunto de entrenamiento");
 					int valorExp = scanner.nextInt();
 					scanner.nextLine(); // Consume newline after reading the percentage
 					nuevo = new Entrenamiento(datos, (double) valorExp / 100, 1234);
@@ -747,7 +747,7 @@ public class KnnTfg {
 					return nuevo;
 			}
 		} catch (java.util.InputMismatchException e) {
-			logger.warn(MENSAJE_INVALIDA_NUMERO);
+			logger.warn("Entrada inválida. Por favor, introduce un numero.");
 			scanner.next(); // Limpiar el buffer
 			scanner.nextLine(); // Consume newline
 			return null; // Or handle error appropriately
