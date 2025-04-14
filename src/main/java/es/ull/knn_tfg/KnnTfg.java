@@ -10,7 +10,6 @@ import clasificacion.KNN;
 import datos.*;
 import procesamiento.*;
 import entrenamiento.*;
-import vectores.Vector;
 
 public class KnnTfg {
 	private static final Logger logger = LoggerFactory.getLogger(KnnTfg.class);

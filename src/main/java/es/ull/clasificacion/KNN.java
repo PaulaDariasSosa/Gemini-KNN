@@ -29,10 +29,7 @@ public class KNN {
 					double distancia = calcularDistanciaEuclideaCuadrada(prueba.getVector(), instanciaEntrenamiento.getVector(), pesosDouble);
 					String clase = instanciaEntrenamiento.getClase();
 					vecinos.offer(new Vecino(distancia, clase));
-					if (vecinos.size() > k) {
-						// Eliminar el vecino más lejano si hay más de k vecinos
-						vecinos.poll(); // Mantener solo los k vecinos más cercanos
-					}
+					vecinos = pollVecinos(vecinos);
 				} else {
 					Logger logger = LoggerFactory.getLogger(KNN.class);
 					if (logger.isErrorEnabled()) {
@@ -43,6 +40,14 @@ public class KNN {
 		}
 
 		return obtenerClaseMayoritaria(vecinos);
+	}
+
+	private PriorityQueue<Vecino> pollVecinos(PriorityQueue<Vecino> vecinos) {
+		if (vecinos.size() > k) {
+			// Eliminar el vecino más lejano si hay más de k vecinos
+			vecinos.poll(); // Mantener solo los k vecinos más cercanos
+		}
+		return vecinos;
 	}
 
 	private double calcularDistanciaEuclideaCuadrada(Vector v1, Vector v2, java.util.List<Double> pesos) {
