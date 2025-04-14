@@ -303,15 +303,7 @@ public class KnnTfg {
 								Vector vectorInstancia = instanciaAModificar.getVector();
 								if (vectorInstancia != null && arrayListMod.size() == vectorInstancia.size()) {
 									for (int i = 0; i < arrayListMod.size(); i++) {
-										try {
-											vectorInstancia.set(i, Double.parseDouble(arrayListMod.get(i).trim()));
-										} catch (NumberFormatException e) {
-											logger.warn("Valor no numérico '{}' en la entrada para la instancia {}. Se mantendrá el valor original.", arrayListMod.get(i), indiceMod);
-											// Considerar cómo manejar este error (ej: mantener el valor original, lanzar excepción)
-										} catch (IndexOutOfBoundsException e) {
-											logger.error("Error de índice al modificar la instancia {}: {}", indiceMod, e.getMessage());
-											break; // Detener la modificación si hay un error de índice
-										}
+										vectorInstancia.set(i, Double.parseDouble(arrayListMod.get(i).trim()));
 									}
 									logger.info("Instancia {} modificada.", indiceMod);
 								} else if (vectorInstancia == null) {
@@ -631,20 +623,7 @@ public class KnnTfg {
 						String archivoCargar1 = scanner.nextLine();
 						logger.info("Introduzca el nombre del archivo de pruebas: ");
 						String archivoCargar2 = scanner.nextLine();
-						try {
-							nuevo.read(archivoCargar1, archivoCargar2);
-							logger.info(MENSAJE_INTRODUCIR_K);
-							int kCargar = scanner.nextInt();
-							scanner.nextLine(); // Consume newline
-							if (kCargar > 0) {
-								nuevo.generarPrediccion(kCargar);
-								nuevo.generarMatriz(kCargar);
-							} else {
-								logger.warn("El valor de k debe ser mayor que cero.");
-							}
-						} catch (IOException e) {
-							logger.error("Error al cargar los datasets de experimentación: {}", e.getMessage());
-						}
+						cargarPrediccon(nuevo, archivoCargar1, archivoCargar2);
 						break;
 					case 5:
 						logger.info("Saliendo de las opciones de experimentación.");
@@ -661,6 +640,23 @@ public class KnnTfg {
 			logger.error("Error en la experimentación: {}", e.getMessage());
 		}
 		// No cerrar el scanner aquí
+	}
+
+	private static void cargarPrediccon(Entrenamiento nuevo, String archivoCargar1, String archivoCargar2) {
+		try {
+			nuevo.read(archivoCargar1, archivoCargar2);
+			logger.info(MENSAJE_INTRODUCIR_K);
+			int kCargar = scanner.nextInt();
+			scanner.nextLine(); // Consume newline
+			if (kCargar > 0) {
+				nuevo.generarPrediccion(kCargar);
+				nuevo.generarMatriz(kCargar);
+			} else {
+				logger.warn("El valor de k debe ser mayor que cero.");
+			}
+		} catch (IOException e) {
+			logger.error("Error al cargar los datasets de experimentación: {}", e.getMessage());
+		}
 	}
 
 	public static Entrenamiento experimentacionAleatoria(Dataset datos) {
