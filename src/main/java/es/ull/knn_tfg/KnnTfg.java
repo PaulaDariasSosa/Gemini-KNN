@@ -18,6 +18,9 @@ public class KnnTfg {
 	private static final String MENSAJE_INVALIDA_NUMERO = "Entrada inválida. Por favor, introduce un número.";
 	private static final String MENSAJE_OPCION_INVALIDA= "Opción inválida.";
 	private static final String MENSAJE_INDICE_RANGO= "Índice fuera de rango.";
+	private static final String MENSAJE_ARCHIVO_ENTRENAMIENTO = "Introduzca el nombre para el archivo de entrenamiento: ";
+	private static final String MENSAJE_ARCHIVO_PRUEBAS = "Introduzca el nombre del archivo de pruebas: ";
+
 
 	private static Dataset datosCrudos = new Dataset();
 	private static Dataset datos = new Dataset();
@@ -53,7 +56,7 @@ public class KnnTfg {
 		try {
 			opcion = scanner.nextInt();
 		} catch (java.util.InputMismatchException e) {
-			logger.warn(MENSAJE_INVALIDA_NUMERO);
+			logger.warn("Entrada inválida. Por favor, introduce un valor númerico.");
 			scanner.next(); // Limpiar el buffer del scanner
 		}
 		scanner.nextLine(); // Consumir la nueva línea
@@ -128,8 +131,6 @@ public class KnnTfg {
 	private static void modificarDataset() {
 		try {
 			datos = modify(datos);
-		} catch (IllegalArgumentException e) {
-			logger.error("Error al modificar el dataset: {}", e.getMessage());
 		} catch (IndexOutOfBoundsException e) {
 			logger.error("Error de índice al modificar el dataset: {}", e.getMessage());
 		}
@@ -281,7 +282,7 @@ public class KnnTfg {
 						logger.warn(MENSAJE_OPCION_INVALIDA);
 				}
 			} catch (java.util.InputMismatchException e) {
-				logger.warn(MENSAJE_INVALIDA_NUMERO);
+				logger.warn("Entrada inválida. Por favor, introduce un númerico.");
 				scanner.next(); // Limpiar el buffer
 				scanner.nextLine(); // Consume newline
 				opcion = -1; // Para que el bucle continúe
@@ -382,15 +383,12 @@ public class KnnTfg {
 						logger.warn(MENSAJE_OPCION_INVALIDA);
 				}
 			} catch (InputMismatchException e) {
-				logger.warn(MENSAJE_INVALIDA_NUMERO);
+				logger.warn("Entrada inválida. Por favor, introduce un número válido.");
 				scanner.next(); // Limpiar el buffer
 				scanner.nextLine(); // Consume newline
 				opcion = -1; // Para que el bucle continúe
 			} catch (IllegalArgumentException e) {
 				logger.error("Error al modificar el dataset: {}", e.getMessage());
-				return data;
-			} catch (IndexOutOfBoundsException e) {
-				logger.error("Error de índice al modificar el dataset: {}", e.getMessage());
 				return data;
 			}
 		}
@@ -402,7 +400,7 @@ public class KnnTfg {
 		logger.info("       [1] Datos crudos ");
 		logger.info("       [2] Rango 0-1 "); // por defecto
 		logger.info("       [3] Estandarización ");
-		logger.info("       [4] Salir ");
+		logger.info("       [4] Salir (se usará la opción por defecto)");
 		int opcion = 1;
 		try {
 			opcion = scanner.nextInt();
@@ -662,17 +660,17 @@ public class KnnTfg {
 						nuevo = experimentacionAleatoria(datos);
 						break;
 					case 3:
-						logger.info("Introduzca el nombre para el archivo de entrenamiento: ");
+						logger.info(MENSAJE_ARCHIVO_ENTRENAMIENTO);
 						String archivo1 = scanner.nextLine();
-						logger.info("Introduzca el nombre para el archivo de pruebas: ");
+						logger.info(MENSAJE_ARCHIVO_PRUEBAS);
 						String archivo2 = scanner.nextLine();
 						nuevo.write(archivo1, archivo2);
 						logger.info("Datasets de entrenamiento y pruebas guardados.");
 						break;
 					case 4:
-						logger.info("Introduzca el nombre del archivo de entrenamiento: ");
+						logger.info(MENSAJE_ARCHIVO_ENTRENAMIENTO);
 						String archivoCargar1 = scanner.nextLine();
-						logger.info("Introduzca el nombre del archivo de pruebas: ");
+						logger.info(MENSAJE_ARCHIVO_PRUEBAS);
 						String archivoCargar2 = scanner.nextLine();
 						cargarPrediccon(nuevo, archivoCargar1, archivoCargar2);
 						break;
