@@ -265,4 +265,11 @@ public class Dataset {
 	public void setAtributos(List<Atributo> nuevos) {
 		this.atributos = nuevos;
 	}
+
+	public void set(int index, Instancia nuevo) {
+		List<Object> valores = nuevo.getValores();
+		for (int i = 0; i < atributos.size(); ++i) {
+
+		}
+	}
 }

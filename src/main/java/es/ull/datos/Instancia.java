@@ -84,4 +84,12 @@ public class Instancia {
 		valores.remove(valores.size() - 1);
 	}
 
+	public void addClase(String clase) {
+		valores.add(clase);
+	}
+
+	public void set (int i, Object nuevo) {
+		valores.set(i, nuevo);
+	}
+
 }

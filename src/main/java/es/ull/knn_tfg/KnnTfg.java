@@ -1,10 +1,8 @@
 package knn_tfg;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -254,10 +252,68 @@ public class KnnTfg {
 		return archivo;
 	}
 
+	private static Dataset agregarInstancia(Dataset data) {
+		logger.info(MENSAJE_INTRODUCIR_VALORES);
+		String valores = scanner.nextLine();
+		String[] subcadenas = valores.split(",");
+		ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(subcadenas));
+		logger.info("Añadiendo instancia: {}", arrayList);
+		data.add(arrayList);
+		return data;
+	}
+
+	private static Dataset eliminarInstancia(Dataset data) {
+		logger.info("Introduce el índice a eliminar: ");
+		int valor = scanner.nextInt();
+		scanner.nextLine(); // Consume newline
+		if (valor >= 0 && valor < data.numeroCasos()) {
+			data.delete(valor);
+			logger.info("Instancia {} eliminada.", valor);
+		} else {
+			logger.warn("Índice de instancia a eliminar fuera de rango.");
+		}
+		return data;
+	}
+
+	private static Dataset modificarInstancia(Dataset data) {
+		logger.info(MENSAJE_INTRODUCIR_VALORES);
+		String valores = scanner.nextLine();
+		String[] subcadenasMod = valores.split(",");
+		ArrayList<String> arrayListMod = new ArrayList<>(Arrays.asList(subcadenasMod));
+		logger.info("Introduce el índice de la instancia a modificar: ");
+		int indiceMod = scanner.nextInt();
+		scanner.nextLine(); // Consume newline
+		if (indiceMod >= 0 && indiceMod < data.numeroCasos()) {
+			Instancia instanciaAModificar = data.getInstance(indiceMod);
+			if (instanciaAModificar != null && instanciaAModificar.getVector() != null && arrayListMod.size() == instanciaAModificar.getVector().size()+1) {
+				for (int i = 0; i < arrayListMod.size()-1; i++) {
+					try {
+						instanciaAModificar.set(i, Double.parseDouble(arrayListMod.get(i).trim()));
+					} catch (NumberFormatException e) {
+						logger.error("Error al convertir valor en índice {}: {}", i, e.getMessage());
+						return data; // Or handle differently
+					}
+					instanciaAModificar.addClase(arrayListMod.get(arrayListMod.size()-1));
+				}
+				logger.info("Instancia {} modificada.", indiceMod);
+				data.delete(indiceMod);
+				data.add(instanciaAModificar);
+			} else {
+				logger.warn("No se puede modificar la instancia {} debido a tamaño incorrecto o instancia nula.", indiceMod);
+			}
+		} else {
+			logger.warn("Índice de instancia a modificar fuera de rango.");
+		}
+
+		return data;
+	}
+
+	private static Dataset cambiarPesosWrapper(Dataset data) {
+		return cambiarPesos(data);
+	}
+
 	public static Dataset modify(Dataset data) {
 		int opcion = 2;
-		String valores = "";
-		Scanner scannerLocal = new Scanner(System.in);
 		while (opcion != 5) {
 			logger.info("Elija una opción de modificación ");
 			logger.info("       [1] Añadir instancia ");
@@ -266,70 +322,30 @@ public class KnnTfg {
 			logger.info("       [4] Cambiar peso de los atributos ");
 			logger.info("       [5] Salir ");
 			try {
-				opcion = scannerLocal.nextInt();
-				scannerLocal.nextLine(); // Consume newline
+				opcion = scanner.nextInt();
+				scanner.nextLine(); // Consume newline
 				switch (opcion) {
 					case 1:
-						logger.info(MENSAJE_INTRODUCIR_VALORES);
-						valores = scannerLocal.nextLine();
-						String[] subcadenas = valores.split(",");
-						ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(subcadenas));
-						if (logger.isInfoEnabled()) {
-							logger.info(String.valueOf(arrayList));
-						}
-						data.add(arrayList);
-						return data;
+						data = agregarInstancia(data);
+						break;
 					case 2:
-						logger.info("Introduce el indice a eliminar: ");
-						int valor = scannerLocal.nextInt();
-						scannerLocal.nextLine(); // Consume newline
-						if (valor >= 0 && valor < data.numeroCasos()) {
-							data.delete(valor);
-						} else {
-							logger.warn("Índice de instancia a eliminar fuera de rango.");
-						}
-						return data;
+						data = eliminarInstancia(data);
+						break;
 					case 3:
-						logger.info(MENSAJE_INTRODUCIR_VALORES);
-						valores = scannerLocal.nextLine();
-						String[] subcadenasMod = valores.split(",");
-						ArrayList<String> arrayListMod = new ArrayList<>(Arrays.asList(subcadenasMod));
-						logger.info("Introduce el indice de la instancia a modificar: ");
-						int indiceMod = scannerLocal.nextInt();
-						scannerLocal.nextLine(); // Consume newline
-						if (indiceMod >= 0 && indiceMod < data.numeroCasos()) {
-							Instancia instanciaAModificar = data.getInstance(indiceMod);
-							if (instanciaAModificar != null) {
-								Vector vectorInstancia = instanciaAModificar.getVector();
-								if (vectorInstancia != null && arrayListMod.size() == vectorInstancia.size()) {
-									for (int i = 0; i < arrayListMod.size(); i++) {
-										vectorInstancia.set(i, Double.parseDouble(arrayListMod.get(i).trim()));
-									}
-									logger.info("Instancia {} modificada.", indiceMod);
-								} else if (vectorInstancia == null) {
-									logger.warn("El vector de la instancia {} es nulo.", indiceMod);
-								} else {
-									logger.warn("El número de valores introducidos no coincide con el número de atributos de la instancia {}.", indiceMod);
-								}
-							} else {
-								logger.warn("No se encontró la instancia en el índice especificado.");
-							}
-						} else {
-							logger.warn("Índice de instancia a modificar fuera de rango.");
-						}
-						return data;
+						data = modificarInstancia(data);
+						break;
 					case 4:
-						data = cambiarPesos(data);
-						return data;
+						data = cambiarPesosWrapper(data);
+						break;
 					case 5:
 						break;
 					default:
 						logger.warn(MENSAJE_OPCION_INVALIDA);
 				}
-			} catch (java.util.InputMismatchException e) {
+			} catch (InputMismatchException e) {
 				logger.warn(MENSAJE_INVALIDA_NUMERO);
-				scannerLocal.next(); // Limpiar el buffer
-				scannerLocal.nextLine(); // Consume newline
+				scanner.next(); // Limpiar el buffer
+				scanner.nextLine(); // Consume newline
 				opcion = -1; // Para que el bucle continúe
 			} catch (IllegalArgumentException e) {
 				logger.error("Error al modificar el dataset: {}", e.getMessage());
@@ -339,7 +355,6 @@ public class KnnTfg {
 				return data;
 			}
 		}
-		scannerLocal.close(); // Cerrar el scanner local
 		return data;
 	}
 
@@ -392,28 +407,27 @@ public class KnnTfg {
 		logger.info("           [2] Mismo peso para todos los atributos "); // por defecto ( valor 1 )
 		logger.info("           [3] Cambiar peso un atributo");
 		int opcion = 1;
-		Scanner scannerLocal = new Scanner(System.in);
 		try {
-			opcion = scannerLocal.nextInt();
-			scannerLocal.nextLine(); // Consume newline
+			opcion = scanner.nextInt();
+			scanner.nextLine(); // Consume newline
 			switch (opcion) {
 				case 1:
 					logger.info("Introduce los pesos para cada atributo separados por comas:");
-					String valores = scannerLocal.nextLine();
+					String valores = scanner.nextLine();
 					String[] subcadenas = valores.split(",");
 					ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(subcadenas));
 					data.cambiarPeso(arrayList);
 					break;
 				case 2:
 					logger.info("Introduce el peso para asignar a todos los atributos (entre 0 y 1):");
-					double valoresD = scannerLocal.nextDouble();
+					double valoresD = scanner.nextDouble();
 					data.cambiarPeso(valoresD);
 					break;
 				case 3:
 					logger.info("Introduce el indice del atributo a modificar: ");
-					int valorI = scannerLocal.nextInt();
+					int valorI = scanner.nextInt();
 					logger.info("Peso para asignar (Debe estar entre 0 y 1): ");
-					double nuevoPeso = scannerLocal.nextDouble();
+					double nuevoPeso = scanner.nextDouble();
 					if (nuevoPeso >= 0 && nuevoPeso <= 1) {
 						data.cambiarPeso(valorI, nuevoPeso);
 					} else {
@@ -424,12 +438,10 @@ public class KnnTfg {
 			}
 		} catch (java.util.InputMismatchException e) {
 			logger.warn(MENSAJE_INVALIDA_NUMERO);
-			scannerLocal.next(); // Limpiar el buffer
-			scannerLocal.nextLine(); // Consume newline
+			scanner.next(); // Limpiar el buffer
+			scanner.nextLine(); // Consume newline
 		} catch (IllegalArgumentException e) {
 			logger.error("Error al cambiar los pesos: {}", e.getMessage());
-		} finally {
-			scannerLocal.close(); // Cerrar el scanner local
 		}
 		return data;
 	}
