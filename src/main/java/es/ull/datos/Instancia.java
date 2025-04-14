@@ -92,4 +92,14 @@ public class Instancia {
 		valores.set(i, nuevo);
 	}
 
+	public String getValoresString() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < valores.size(); ++i) {
+			sb.append(valores.get(i));
+			if (i < valores.size() - 1) {
+				sb.append(",");
+			}
+		}
+		return sb.toString();
+	}
 }

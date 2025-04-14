@@ -157,56 +157,98 @@ public class KnnTfg {
 
 	private static void algoritmoKNNInstancia() {
 		try {
-			logger.info(MENSAJE_INTRODUCIR_K);
-			int k = scanner.nextInt();
-			if (k <= 0) {
-				throw new IllegalArgumentException("El valor de k debe ser mayor que cero.");
-			}
-			KNN intento = new KNN(k);
-			logger.info(MENSAJE_INTRODUCIR_VALORES);
-			Scanner scanner1 = new Scanner(System.in);
-			String valoresString = scanner1.nextLine();
-			String[] subcadenas = valoresString.split(",");
-			ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(subcadenas));
-			Instancia instance = new Instancia(valoresString);
-			Dataset copiaCrudos = new Dataset(datosCrudos);
-			if (datos.getPreprocesado() != 1) {
-				if (arrayList.size() != copiaCrudos.numeroAtributos() - 1) {
-					throw new IllegalArgumentException("El número de valores introducidos no coincide con el número de atributos del dataset.");
-				}
-				arrayList.add("clase");
-				copiaCrudos.add(arrayList);
-				Preprocesado preprocesador = null;
-				if (datos.getPreprocesado() == 2) preprocesador = new Normalizacion();
-				if (datos.getPreprocesado() == 3) preprocesador = new Estandarizacion();
-				if (preprocesador != null) {
-					copiaCrudos = new Dataset(preprocesador.procesar(copiaCrudos));
-					instance = copiaCrudos.getInstance(copiaCrudos.numeroCasos() - 1);
-					copiaCrudos.delete(copiaCrudos.numeroCasos() - 1);
-					instance.deleteClase();
-				}
-			} else {
-				if (arrayList.size() != copiaCrudos.numeroAtributos()) {
-					throw new IllegalArgumentException("El número de valores introducidos no coincide con el número de atributos del dataset.");
-				}
-			}
-			if (logger.isInfoEnabled() && copiaCrudos.numeroCasos() > 0) {
-				String claseElegida = intento.clasificar(copiaCrudos, instance);
-				if (claseElegida != null) {
-					logger.info("La clase elegida es: {}", claseElegida);
-				} else {
-					logger.warn("No se pudo clasificar la instancia.");
-				}
+			int k = obtenerK();
+			KNN knnClassifier = new KNN(k);
+			Instancia instanceToClassify = obtenerInstanciaParaClasificar();
+			Dataset datasetForClassification = prepararDatasetParaClasificacion(instanceToClassify);
+			instanceToClassify.addClase("clase");
+
+			if (datasetForClassification.numeroCasos() > 0) {
+				String claseElegida = knnClassifier.clasificar(datasetForClassification, instanceToClassify);
+				logClasificacionResultado(claseElegida);
 			} else {
 				logger.warn("No hay instancias en el dataset para realizar la clasificación.");
 			}
-		} catch (java.util.InputMismatchException e) {
-			logger.error("Entrada inválida para el valor de k: {}", e.getMessage());
+
+		} catch (InputMismatchException e) {
+			logger.error("Entrada inválida: {}", e.getMessage());
 			scanner.next(); // Limpiar el buffer
 		} catch (IllegalArgumentException e) {
-			logger.error("Error al realizar la clasificación KNN: {}", e.getMessage());
+			logger.error("Error: {}", e.getMessage());
 		} catch (IndexOutOfBoundsException e) {
-			logger.error("Error de índice al realizar la clasificación KNN: {}", e.getMessage());
+			logger.error("Error de índice: {}", e.getMessage());
+		}
+	}
+
+	private static int obtenerK() throws InputMismatchException, IllegalArgumentException {
+		logger.info(MENSAJE_INTRODUCIR_K);
+		int k = scanner.nextInt();
+		if (k <= 0) {
+			throw new IllegalArgumentException("El valor de k debe ser mayor que cero.");
+		}
+		return k;
+	}
+
+	private static Instancia obtenerInstanciaParaClasificar() {
+		logger.info(MENSAJE_INTRODUCIR_VALORES);
+		Scanner scanner1 = new Scanner(System.in);
+		String valoresString = scanner1.nextLine();
+		// convertir la cadena en una lista de valores
+		String[] subcadenas = valoresString.split(",");
+		ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(subcadenas));
+		ArrayList<Double> valores = new ArrayList<>();
+		for (String valor : arrayList) {
+			try {
+				valores.add(Double.parseDouble(valor.trim()));
+			} catch (NumberFormatException e) {
+				logger.error("Error al convertir el valor: {}", e.getMessage());
+				throw new IllegalArgumentException("Error al convertir el valor: " + valor);
+			}
+		}
+		ArrayList<Object> valoresObject = new ArrayList<>();
+		valoresObject.addAll(valores);
+		Instancia instancia = new Instancia(valoresObject);
+		return instancia;
+	}
+
+	private static Dataset prepararDatasetParaClasificacion(Instancia instanceToClassify) {
+		Dataset copiaCrudos = new Dataset(datosCrudos);
+		List<String> valoresList = Arrays.asList(instanceToClassify.getValoresString().split(","));
+
+		if (datos.getPreprocesado() != 1) {
+			if (valoresList.size() != copiaCrudos.numeroAtributos()-1) {
+				throw new IllegalArgumentException("El número de valores introducidos no coincide con el número de atributos del dataset.");
+			}
+			List<String> instanciaConClase = new ArrayList<>(valoresList);
+			instanciaConClase.add("clase");
+			copiaCrudos.add(instanciaConClase);
+			copiaCrudos = preprocesarDataset(copiaCrudos);
+			instanceToClassify = copiaCrudos.getInstance(copiaCrudos.numeroCasos() - 1);
+			instanceToClassify.deleteClase();
+			copiaCrudos.delete(copiaCrudos.numeroCasos()-1);
+		} else {
+			if (valoresList.size() != copiaCrudos.numeroAtributos()-1) {
+				throw new IllegalArgumentException("El número de valores introducidos no coincide con el número de atributos del dataset.");
+			}
+		}
+		return copiaCrudos;
+	}
+
+	private static Dataset preprocesarDataset(Dataset dataset) {
+		Preprocesado preprocesador = null;
+		if (datos.getPreprocesado() == 2) {
+			preprocesador = new Normalizacion();
+		} else if (datos.getPreprocesado() == 3) {
+			preprocesador = new Estandarizacion();
+		}
+		return (preprocesador != null) ? new Dataset(preprocesador.procesar(dataset)) : dataset;
+	}
+
+	private static void logClasificacionResultado(String claseElegida) {
+		if (claseElegida != null) {
+			logger.info("La clase elegida es: {}", claseElegida);
+		} else {
+			logger.warn("No se pudo clasificar la instancia.");
 		}
 	}
 
