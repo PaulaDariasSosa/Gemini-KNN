@@ -474,7 +474,7 @@ public class KnnTfg {
 				default: logger.warn("Opción no válida.");
 			}
 		} catch (java.util.InputMismatchException e) {
-			logger.warn(MENSAJE_INVALIDA_NUMERO);
+			logger.warn( "Entrada no válida. Por favor, introduce un número.");
 			scanner.next(); // Limpiar el buffer
 			scanner.nextLine(); // Consume newline
 		} catch (IllegalArgumentException e) {
@@ -525,11 +525,11 @@ public class KnnTfg {
 					logger.warn("Opción no válida.");
 			}
 		} catch (java.util.InputMismatchException e) {
-			logger.warn(MENSAJE_INVALIDA_NUMERO);
+			logger.warn( "Entrada no válida. Por favor, introduce un número.");
 			scanner.next(); // Limpiar el buffer
 			scanner.nextLine(); // Consume newline
 		} catch (IndexOutOfBoundsException e) {
-			logger.warn(MENSAJE_INDICE_RANGO);
+			logger.warn("Índice fuera de rango");
 		}
 	}
 
@@ -574,7 +574,7 @@ public class KnnTfg {
 			scanner.next(); // Limpiar el buffer
 			scanner.nextLine(); // Consume newline
 		} catch (IndexOutOfBoundsException e) {
-			logger.warn(MENSAJE_INDICE_RANGO);
+			logger.warn("Índice fuera de rango");
 		} catch (ClassCastException e) {
 			logger.warn("El atributo en ese índice no es cuantitativo.");
 		}
