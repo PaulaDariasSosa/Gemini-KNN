@@ -207,8 +207,7 @@ public class KnnTfg {
 		}
 		ArrayList<Object> valoresObject = new ArrayList<>();
 		valoresObject.addAll(valores);
-		Instancia instancia = new Instancia(valoresObject);
-		return instancia;
+		return new Instancia(valoresObject);
 	}
 
 	private static Dataset prepararDatasetParaClasificacion(Instancia instanceToClassify) {
@@ -715,7 +714,7 @@ public class KnnTfg {
 	public static Entrenamiento experimentacionAleatoria(Dataset datos) {
 		logger.info("               [1] Semilla(Seed) por defecto");
 		logger.info("               [2] Semilla(Seed) manual");
-		int opcion = -1;
+		int opcion = -2;
 		try {
 			opcion = scanner.nextInt();
 			scanner.nextLine(); // Consume newline after reading the sub-option
