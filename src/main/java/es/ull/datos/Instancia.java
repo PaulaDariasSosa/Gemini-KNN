@@ -12,14 +12,18 @@ public class Instancia {
 	public Instancia(){
 		this.valores = new ArrayList<Object>();
 	}
-	
+
 	public Instancia(List<Object> nuevos){
-		this.valores = nuevos;
+		if (nuevos == null) {
+			this.valores = new ArrayList<>(); // Or throw IllegalArgumentException, depending on desired behavior
+		} else {
+			this.valores = new ArrayList<>(nuevos); // THIS IS THE KEY CHANGE
+		}
 	}
-	
+
 	public Instancia(String nuevos){
 		String[] subcadenas = nuevos.split(",");
-		ArrayList<Object> arrayList = new ArrayList<>(Arrays.asList(subcadenas));
+		ArrayList<Object> arrayList = new ArrayList<>(Arrays.asList(subcadenas)); // This creates a new modifiable ArrayList
 		this.valores = arrayList;
 	}
 	
@@ -56,27 +60,54 @@ public class Instancia {
         }
 		this.valores = arrayListObject;
 	}
-	
+
+	// Inside Instancia.java
 	public void estandarizar() {
 		Vector aux = this.getVector();
+		if (aux.size() == 0) { // Handle empty vector case gracefully
+			this.valores = new ArrayList<>(); // Clear values or keep as is? Current normalize clears.
+			return;
+		}
+
 		double media = 0.0;
 		for(int i = 0; i < aux.size(); ++i) {
 			media += aux.get(i);
 		}
-		media =  media/aux.size(); 
-		double auxiliar = 0;
+		media =  media/aux.size();
+
+		double auxiliar = 0; // sum of squared differences
 		for(int i = 0; i < aux.size(); ++i) {
 			auxiliar += (aux.get(i) - media) * (aux.get(i) - media);
 		}
-		auxiliar /= this.valores.size();
-		double desviacion = Math.sqrt(auxiliar);
+
+		// Corrected line: Divide by aux.size() for population variance
+		double desviacion = 0.0;
+		if (aux.size() > 0) { // Ensure no division by zero if aux.size() was 0 (already handled above but good for clarity)
+			desviacion = Math.sqrt(auxiliar / aux.size());
+		}
+
+
+		// Handle division by zero for standard deviation
+		if (desviacion == 0.0) {
+			// If std dev is 0, all values are the same. Standardization makes them 0 (or original value if definition allows).
+			// A common approach is to set them all to 0, or leave them as is if they are already 0.
+			// Given normalization sets them to original value if range is 0, let's follow that.
+			// Or more strictly, if std dev is 0, then x - mean is 0, so result is 0.
+			ArrayList<Object> arrayListObject = new ArrayList<>();
+			for (int i = 0; i < aux.size(); ++i) {
+				arrayListObject.add(0.0); // All standardized values become 0
+			}
+			this.valores = arrayListObject;
+			return;
+		}
+
 		for (int i = 0; i < aux.size(); ++i) {
 			aux.set(i, (aux.get(i)-media)/desviacion);
 		}
 		ArrayList<Object> arrayListObject = new ArrayList<>();
-        for (Double d : aux.getValores()) {
-            arrayListObject.add(d); // La conversión automática de tipos se encarga de convertir Double a Object
-        }
+		for (Double d : aux.getValores()) {
+			arrayListObject.add(d);
+		}
 		this.valores = arrayListObject;
 	}
 	

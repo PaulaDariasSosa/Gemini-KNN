@@ -41,55 +41,66 @@ public class Cuantitativo extends Atributo{
 	public void setValores(Vector nuevos) {
 		this.valores = nuevos;
 	}
-	
+
 	public double minimo() {
-		double minimo = this.valores.get(0);
-		for(int i = 0; i < this.valores.size(); ++i) {
-			if(minimo > this.valores.get(i)) minimo = this.valores.get(i);
-		}
-		return minimo;
+		// Delegar en el método de Vector que ya maneja el caso vacío
+		return this.valores.getMin();
 	}
-	
+
 	public double maximo() {
-		double maximo = this.valores.get(0);
-		for(int i = 0; i < this.valores.size(); ++i) {
-			if(maximo < this.valores.get(i)) maximo = this.valores.get(i);
-		}
-		return maximo;
+		// Delegar en el método de Vector que ya maneja el caso vacío
+		return this.valores.getMax();
 	}
-	
+
 	public double media() {
-		double media = this.valores.get(0);
-		for(int i = 0; i < this.valores.size(); ++i) {
-			media += this.valores.get(i);
+		if (this.valores.size() == 0) { // Añadir esta validación
+			throw new IllegalStateException("No se puede calcular la media de un vector vacío.");
 		}
-		return media/this.valores.size();
+		double suma = 0.0; // Cambiar inicialización
+		for(int i = 0; i < this.valores.size(); ++i) {
+			suma += this.valores.get(i);
+		}
+		return suma / this.valores.size();
 	}
-	
+
 	public double desviacion() {
 		double media = this.media();
 		double auxiliar = 0;
 		for(int i = 0; i < this.valores.size(); ++i) {
 			auxiliar += (this.valores.get(i) - media) * (this.valores.get(i) - media);
 		}
-		auxiliar /= this.valores.size();
+		auxiliar /= this.valores.size(); // Tu calculas desviación poblacional. Eso está bien.
 		return Math.sqrt(auxiliar);
 	}
 	
 	public int size() {
 		return this.valores.size();
 	}
-	
+
 	public void estandarizacion() {
+		if (this.valores.size() == 0) { // Añadir esta validación
+			throw new IllegalStateException("No se puede estandarizar un vector vacío.");
+		}
+		double media = this.media();
+		double desviacion = this.desviacion(); // Calcular una vez
+		if (desviacion == 0.0) { // Manejar el caso de desviación cero
+			for (int i = 0; i < valores.size(); ++i) {
+				valores.set(i, 0.0); // Si todos los valores son iguales, su Z-score es 0.
+			}
+			return;
+		}
 		for (int i = 0; i < valores.size(); ++i) {
-			valores.set(i, (valores.get(i)-this.media())/this.desviacion());
+			valores.set(i, (valores.get(i) - media) / desviacion);
 		}
 	}
 
 	@Override
 	public void add(Object valor) {
-		valores.add((double) valor);
-		
+		if (valor instanceof Number) { // Verifica si es un número (Integer, Double, etc.)
+			valores.add(((Number) valor).doubleValue()); // Convierte a Double
+		} else {
+			throw new ClassCastException("El valor añadido debe ser un número convertible a Double.");
+		}
 	}
 	
 	@Override

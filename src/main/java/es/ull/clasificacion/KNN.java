@@ -25,7 +25,7 @@ public class KNN {
 			Instancia instanciaEntrenamiento = entrenamiento.getInstance(i);
 			if (instanciaEntrenamiento.getVector() != null) {
 				List<Double> pesosDouble = entrenamiento.getPesosDouble();
-				if (pesosDouble != null && pesosDouble.size() == prueba.getVector().size()) {
+				if (pesosDouble != null && pesosDouble.size()-1 == prueba.getVector().size()) {
 					double distancia = calcularDistanciaEuclideaCuadrada(prueba.getVector(), instanciaEntrenamiento.getVector(), pesosDouble);
 					String clase = instanciaEntrenamiento.getClase();
 					vecinos.offer(new Vecino(distancia, clase));
@@ -51,7 +51,7 @@ public class KNN {
 	}
 
 	private double calcularDistanciaEuclideaCuadrada(Vector v1, Vector v2, java.util.List<Double> pesos) {
-		if (v1 == null || v2 == null || pesos == null || v1.size() != v2.size() || v1.size() != pesos.size()) {
+		if (v1 == null || v2 == null || pesos == null || v1.size() != v2.size() || v1.size() != pesos.size()-1) {
 			Logger logger = LoggerFactory.getLogger(KNN.class);
 			if (logger.isErrorEnabled()) {
 				logger.error("Error: Los vectores y la lista de pesos deben ser no nulos y tener el mismo tamaño para calcular la distancia euclídea ponderada.");

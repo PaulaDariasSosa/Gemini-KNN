@@ -11,7 +11,7 @@ public class Matriz {
     private List<Vector> matrix;
     private int numRows;
     private int numCols;
-    private boolean isTransposed;
+    boolean isTransposed;
     private static final Logger logger = LoggerFactory.getLogger(Matriz.class);
 
     // Constructor que crea una matriz de dimensión 1x1 con un único elemento 0

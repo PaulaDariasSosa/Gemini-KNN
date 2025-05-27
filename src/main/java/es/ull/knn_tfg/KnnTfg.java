@@ -155,7 +155,7 @@ public class KnnTfg {
 		}
 	}
 
-	private static void algoritmoKNNInstancia() {
+	static void algoritmoKNNInstancia() {
 		try {
 			int k = obtenerK();
 			KNN knnClassifier = new KNN(k);

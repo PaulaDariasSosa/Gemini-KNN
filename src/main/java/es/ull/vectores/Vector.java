@@ -11,10 +11,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class Vector {
-    private List<Double> coef;
+    List<Double> coef;
     private static final Logger logger = LoggerFactory.getLogger(Vector.class);
 
     /**
@@ -70,11 +71,11 @@ public class Vector {
      * @throws FileNotFoundException
      */
     public Vector(File file) throws FileNotFoundException {
-        coef = new ArrayList<>();
+        coef = new ArrayList<>(); // Initializes coef
         if (file == null) {
             throw new IllegalArgumentException("El archivo proporcionado no puede ser nulo.");
         }
-        readFileWithScanner(file);
+        readFileWithScanner(file); // Calls the private method
     }
 
     /**
@@ -304,12 +305,12 @@ public class Vector {
             throw new IllegalArgumentException("El scanner no puede ser nulo.");
         }
         coef.clear();
-        while (scanner.hasNextDouble()) {
-            try {
-                coef.add(scanner.nextDouble());
-            } catch (java.util.InputMismatchException e) {
-                logger.warn("Entrada no válida en el scanner: {}", scanner.next());
-                // Considerar si quieres detener la lectura o ignorar el valor
+        scanner.useLocale(Locale.US); // Still needed for correct parsing
+        while (scanner.hasNext()) { // CHANGE: Loop while there are any more tokens
+            if (scanner.hasNextDouble()) { // Check if the next token is a double
+                coef.add(scanner.nextDouble()); // Add if it's a double
+            } else {
+                logger.warn("Entrada no válida en el scanner: {}", scanner.next()); // Consume the invalid token
             }
         }
     }
@@ -380,12 +381,12 @@ public class Vector {
             throw new IllegalArgumentException("El archivo no puede ser nulo.");
         }
         try (Scanner scanner = new Scanner(file)) {
-            while (scanner.hasNextDouble()) {
-                try {
-                    coef.add(scanner.nextDouble());
-                } catch (java.util.InputMismatchException e) {
-                    logger.warn("Entrada no válida en el archivo {}: {}", file.getName(), scanner.next());
-                    // Considerar si quieres detener la lectura o ignorar el valor
+            scanner.useLocale(Locale.US); // Still needed for correct parsing
+            while (scanner.hasNext()) { // CHANGE: Loop while there are any more tokens
+                if (scanner.hasNextDouble()) { // Check if the next token is a double
+                    coef.add(scanner.nextDouble()); // Add if it's a double
+                } else {
+                    logger.warn("Entrada no válida en el archivo {}: {}", file.getName(), scanner.next()); // Consume the invalid token
                 }
             }
         }
