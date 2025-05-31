@@ -11,16 +11,43 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @class EstandarizacionTest
+ * @brief Clase de pruebas unitarias para la clase Estandarizacion.
+ *
+ * Contiene pruebas para verificar el correcto funcionamiento del método `procesar`
+ * de la clase Estandarizacion, asegurando que solo los atributos Cuantitativos
+ * son estandarizados y que los atributos Cualitativos se mantienen sin cambios.
+ * También verifica que la operación se realiza "in-place", modificando los atributos
+ * directamente en el Dataset.
+ */
 @DisplayName("Tests para la clase Estandarizacion")
 class EstandarizacionTest {
 
+    /**
+     * @brief Instancia de la clase Estandarizacion a probar.
+     */
     private Estandarizacion estandarizacion;
 
+    /**
+     * @brief Método de configuración que se ejecuta antes de cada prueba.
+     *
+     * Inicializa una nueva instancia de Estandarizacion para cada test, asegurando
+     * un estado limpio en cada ejecución.
+     */
     @BeforeEach
     void setUp() {
         estandarizacion = new Estandarizacion();
     }
 
+    /**
+     * @brief Prueba la estandarización de atributos Cuantitativos y la inalteración de Cualitativos.
+     *
+     * Este test verifica que el método `procesar` de Estandarizacion:
+     * - Estandariza correctamente los valores de los atributos de tipo Cuantitativo.
+     * - Deja inalterados los atributos de tipo Cualitativo.
+     * - Retorna la misma instancia de la lista de atributos del Dataset, lo que implica una modificación "in-place".
+     */
     @Test
     @DisplayName("Debería estandarizar atributos Cuantitativos y dejar Cualitativos sin cambios")
     void testProcesarConCuantitativosYCualitativos() {
@@ -81,6 +108,12 @@ class EstandarizacionTest {
         // (200 - 150) / 50.0 = 1.0
     }
 
+    /**
+     * @brief Prueba el procesamiento de un Dataset que solo contiene atributos Cualitativos.
+     *
+     * Verifica que si el Dataset de entrada solo contiene atributos Cualitativos,
+     * el método `procesar` no realiza ninguna modificación en ellos.
+     */
     @Test
     @DisplayName("Debería manejar un Dataset con solo atributos Cualitativos sin cambios")
     void testProcesarSoloCualitativos() {
@@ -105,6 +138,12 @@ class EstandarizacionTest {
         assertEquals("Cuadrado", ((Cualitativo) atributosProcesados.get(1)).getValor(0));
     }
 
+    /**
+     * @brief Prueba el procesamiento de un Dataset vacío.
+     *
+     * Verifica que el método `procesar` maneja correctamente un Dataset vacío,
+     * retornando una lista vacía y no nula, y que sea la misma instancia que la del Dataset original.
+     */
     @Test
     @DisplayName("Debería manejar un Dataset vacío sin errores")
     void testProcesarDatasetVacio() {
@@ -120,6 +159,13 @@ class EstandarizacionTest {
         assertSame(datasetVacio.getAtributos(), atributosProcesados, "La lista de atributos devuelta debería ser la misma instancia");
     }
 
+    /**
+     * @brief Prueba el procesamiento de un atributo Cuantitativo con un solo valor.
+     *
+     * Verifica que el método `procesar` maneja correctamente la estandarización
+     * de un atributo Cuantitativo que contiene un único valor (lo que implica una desviación estándar de 0).
+     * Se espera que los valores estandarizados sean 0.0 en este escenario.
+     */
     @Test
     @DisplayName("Debería manejar atributos Cuantitativos con un solo valor (desviación estándar 0)")
     void testProcesarCuantitativoUnicoValor() {
@@ -142,6 +188,12 @@ class EstandarizacionTest {
         // O podría lanzar una excepción si la implementación no lo maneja. Asumimos 0.0 para este caso.
     }
 
+    /**
+     * @brief Prueba que el proceso de estandarización se realiza "in-place".
+     *
+     * Verifica que el método `procesar` modifica directamente la lista de atributos
+     * y los objetos Atributo dentro del Dataset original, en lugar de crear nuevas copias.
+     */
     @Test
     @DisplayName("Debería verificar que el proceso es in-place y la instancia de Cuantitativo se modifica")
     void testProcesarEsInPlace() {

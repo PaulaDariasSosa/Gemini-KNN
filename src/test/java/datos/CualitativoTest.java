@@ -10,11 +10,23 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * \brief Test class for the Cualitativo attribute type.
+ *
+ * This class contains unit tests to verify the correct behavior of the
+ * `Cualitativo` class, including its constructors, inherited methods from `Atributo`,
+ * and its specific methods like `clases()`, `nClases()`, and `frecuencia()`.
+ */
 @DisplayName("Cualitativo Class Tests")
 class CualitativoTest {
 
     private Cualitativo cualitativo;
 
+    /**
+     * \brief Sets up the test environment before each test method is executed.
+     *
+     * Initializes a new `Cualitativo` instance to ensure a clean state for every test.
+     */
     @BeforeEach
     void setUp() {
         // Initialize a fresh Cualitativo instance before each test
@@ -23,6 +35,12 @@ class CualitativoTest {
 
     // --- Constructor Tests ---
 
+    /**
+     * \brief Tests the no-argument constructor of `Cualitativo`.
+     *
+     * Verifies that the `Cualitativo` instance is correctly initialized with a
+     * default empty name, default peso of 1.0 (inherited from Atributo), and an empty list of values.
+     */
     @Test
     @DisplayName("Should create an empty Cualitativo with no-arg constructor")
     void testConstructorEmpty() {
@@ -32,6 +50,12 @@ class CualitativoTest {
         assertTrue(cualitativo.getValores().isEmpty());
     }
 
+    /**
+     * \brief Tests the constructor that takes a name.
+     *
+     * Verifies that the `Cualitativo` instance is correctly initialized with the
+     * provided name, default peso, and an empty list of values.
+     */
     @Test
     @DisplayName("Should create Cualitativo with name constructor")
     void testConstructorWithName() {
@@ -42,6 +66,12 @@ class CualitativoTest {
         assertTrue(namedCualitativo.getValores().isEmpty());
     }
 
+    /**
+     * \brief Tests the constructor that takes a name and a single value.
+     *
+     * Verifies that the `Cualitativo` instance is initialized with the specified
+     * name and the single value added to its list.
+     */
     @Test
     @DisplayName("Should create Cualitativo with name and single value constructor")
     void testConstructorWithNameAndSingleValue() {
@@ -53,6 +83,12 @@ class CualitativoTest {
         assertEquals("Large", singleValueCualitativo.getValor(0));
     }
 
+    /**
+     * \brief Tests the constructor that takes a name and a list of values.
+     *
+     * Verifies that the `Cualitativo` instance is initialized with the provided
+     * name and the list of values. It also checks for shallow copy behavior.
+     */
     @Test
     @DisplayName("Should create Cualitativo with name and list of values constructor")
     void testConstructorWithNameAndListOfValues() {
@@ -69,6 +105,12 @@ class CualitativoTest {
         assertSame(categories, listCualitativo.getValores());
     }
 
+    /**
+     * \brief Tests the copy constructor of `Cualitativo`.
+     *
+     * Verifies that a new `Cualitativo` instance is created with the same name and
+     * peso as the original, but with an independent (empty) list of values.
+     */
     @Test
     @DisplayName("Should create a deep copy of another Cualitativo instance using copy constructor")
     void testCopyConstructor() {
@@ -85,6 +127,12 @@ class CualitativoTest {
 
     // --- Getters and Setters Tests ---
 
+    /**
+     * \brief Tests the `getValores` method.
+     *
+     * Verifies that `getValores` returns a reference to the internal list of values,
+     * exhibiting shallow copy behavior (changes to the returned list will affect the internal state).
+     */
     @Test
     @DisplayName("Should return the internal list of values from getValores")
     void testGetValores() {
@@ -99,6 +147,12 @@ class CualitativoTest {
         assertSame(initialValues, retrievedValues); // Asserts shallow copy
     }
 
+    /**
+     * \brief Tests the `setValores` method.
+     *
+     * Verifies that `setValores` correctly replaces the internal list of values
+     * with a new one and maintains shallow copy behavior.
+     */
     @Test
     @DisplayName("Should allow setting a new list of values")
     void testSetValores() {
@@ -112,6 +166,11 @@ class CualitativoTest {
         assertSame(newValues, cualitativo.getValores()); // Verify shallow copy assignment
     }
 
+    /**
+     * \brief Tests the inherited `getNombre` method from `Atributo`.
+     *
+     * Verifies that the name of the attribute can be correctly retrieved.
+     */
     @Test
     @DisplayName("Should correctly return the name (inherited)")
     void testGetNombreInherited() {
@@ -119,6 +178,11 @@ class CualitativoTest {
         assertEquals("TestName", cualitativo.getNombre());
     }
 
+    /**
+     * \brief Tests the inherited `getPeso` method from `Atributo`.
+     *
+     * Verifies that the weight of the attribute can be correctly retrieved.
+     */
     @Test
     @DisplayName("Should correctly return the peso (inherited)")
     void testGetPesoInherited() {
@@ -126,6 +190,11 @@ class CualitativoTest {
         assertEquals(3.0, cualitativo.getPeso());
     }
 
+    /**
+     * \brief Tests the inherited `get` method from `Atributo`.
+     *
+     * Verifies that the `get` method returns a string in the expected "name: peso" format.
+     */
     @Test
     @DisplayName("Should return name and peso in 'get' method format (inherited)")
     void testGetMethodInherited() {
@@ -136,6 +205,12 @@ class CualitativoTest {
 
     // --- Qualitative Specific Methods Tests ---
 
+    /**
+     * \brief Tests the `clases` method.
+     *
+     * Verifies that `clases` returns a list containing only the unique values
+     * (classes) present in the attribute's data.
+     */
     @Test
     @DisplayName("Should return a list of unique classes")
     void testClases() {
@@ -152,6 +227,11 @@ class CualitativoTest {
         assertFalse(classes.contains("Yellow")); // Ensure no extra classes
     }
 
+    /**
+     * \brief Tests `clases` method when the attribute has no values.
+     *
+     * Verifies that `clases` returns an empty list if the attribute contains no data.
+     */
     @Test
     @DisplayName("Should return an empty list of classes if no values")
     void testClasesEmpty() {
@@ -160,6 +240,11 @@ class CualitativoTest {
         assertTrue(classes.isEmpty());
     }
 
+    /**
+     * \brief Tests the `nClases` method.
+     *
+     * Verifies that `nClases` returns the correct count of unique classes.
+     */
     @Test
     @DisplayName("Should return the correct number of unique classes")
     void testNClases() {
@@ -171,12 +256,23 @@ class CualitativoTest {
         assertEquals(3, cualitativo.nClases());
     }
 
+    /**
+     * \brief Tests `nClases` method when the attribute has no values.
+     *
+     * Verifies that `nClases` returns 0 if the attribute contains no data.
+     */
     @Test
     @DisplayName("Should return 0 for nClases if no values")
     void testNClasesEmpty() {
         assertEquals(0, cualitativo.nClases());
     }
 
+    /**
+     * \brief Tests the `frecuencia` method.
+     *
+     * Verifies that `frecuencia` correctly calculates the relative frequency
+     * of each unique class in the attribute's values.
+     */
     @Test
     @DisplayName("Should calculate correct frequencies for each class")
     void testFrecuencia() {
@@ -214,6 +310,11 @@ class CualitativoTest {
         assertEquals(1.0, freqA + freqB + freqC, 0.001);
     }
 
+    /**
+     * \brief Tests `frecuencia` method when the attribute has no values.
+     *
+     * Verifies that `frecuencia` returns an empty list if the attribute contains no data.
+     */
     @Test
     @DisplayName("Should return empty frequencies list if no values")
     void testFrecuenciaEmpty() {
@@ -224,6 +325,11 @@ class CualitativoTest {
 
     // --- Overridden Atributo Methods Tests ---
 
+    /**
+     * \brief Tests the overridden `size` method.
+     *
+     * Verifies that `size` correctly returns the number of values stored.
+     */
     @Test
     @DisplayName("Should correctly return size of values")
     void testSizeOverride() {
@@ -234,6 +340,11 @@ class CualitativoTest {
         assertEquals(2, cualitativo.size());
     }
 
+    /**
+     * \brief Tests the overridden `add` method for String values.
+     *
+     * Verifies that a String value can be successfully added to the attribute.
+     */
     @Test
     @DisplayName("Should add a String value")
     void testAddOverride() {
@@ -242,6 +353,12 @@ class CualitativoTest {
         assertEquals("NewValue", cualitativo.getValor(0));
     }
 
+    /**
+     * \brief Tests `add` method's behavior with non-String objects.
+     *
+     * Verifies that `add` throws a `ClassCastException` if an object that is not
+     * a String is attempted to be added, as `Cualitativo` expects String values.
+     */
     @Test
     @DisplayName("Should throw ClassCastException if non-String object added")
     void testAddOverrideNonString() {
@@ -249,6 +366,11 @@ class CualitativoTest {
         assertThrows(ClassCastException.class, () -> cualitativo.add(new Object()));
     }
 
+    /**
+     * \brief Tests the overridden `getValor` method.
+     *
+     * Verifies that a String value can be correctly retrieved by its index.
+     */
     @Test
     @DisplayName("Should get a String value by index")
     void testGetValorOverride() {
@@ -256,6 +378,12 @@ class CualitativoTest {
         assertEquals("ItemA", cualitativo.getValor(0));
     }
 
+    /**
+     * \brief Tests `getValor` method's behavior with invalid indices.
+     *
+     * Verifies that `getValor` throws an `IndexOutOfBoundsException` for
+     * negative or out-of-bounds indices.
+     */
     @Test
     @DisplayName("Should throw IndexOutOfBoundsException when getting value out of bounds")
     void testGetValorOverrideOutOfBounds() {
@@ -264,6 +392,12 @@ class CualitativoTest {
         assertThrows(IndexOutOfBoundsException.class, () -> cualitativo.getValor(1));
     }
 
+    /**
+     * \brief Tests the overridden `delete` method.
+     *
+     * Verifies that a value can be correctly deleted by its index and that
+     * subsequent elements shift accordingly.
+     */
     @Test
     @DisplayName("Should delete a value by index")
     void testDeleteOverride() {
@@ -277,6 +411,12 @@ class CualitativoTest {
         assertEquals("Three", cualitativo.getValor(1));
     }
 
+    /**
+     * \brief Tests `delete` method's behavior with invalid indices.
+     *
+     * Verifies that `delete` throws an `IndexOutOfBoundsException` for
+     * negative or out-of-bounds indices.
+     */
     @Test
     @DisplayName("Should throw IndexOutOfBoundsException when deleting value out of bounds")
     void testDeleteOverrideOutOfBounds() {
@@ -285,6 +425,11 @@ class CualitativoTest {
         assertThrows(IndexOutOfBoundsException.class, () -> cualitativo.delete(1));
     }
 
+    /**
+     * \brief Tests the overridden `clear` method.
+     *
+     * Verifies that `clear` removes all values from the attribute, resulting in an empty list.
+     */
     @Test
     @DisplayName("Should clear all values")
     void testClearOverride() {
@@ -296,6 +441,12 @@ class CualitativoTest {
         assertTrue(cualitativo.getValores().isEmpty());
     }
 
+    /**
+     * \brief Tests the overridden `toString` method.
+     *
+     * Verifies that `toString` returns a string representation of the internal
+     * list of values, as defined by `ArrayList`'s `toString`.
+     */
     @Test
     @DisplayName("Should return toString representation of values list")
     void testToStringOverride() {
@@ -304,6 +455,11 @@ class CualitativoTest {
         assertEquals("[Cat, Dog]", cualitativo.toString());
     }
 
+    /**
+     * \brief Tests `toString` method for an empty `Cualitativo` instance.
+     *
+     * Verifies that `toString` returns "[]" when the attribute has no values.
+     */
     @Test
     @DisplayName("Should return empty list string for empty Cualitativo toString")
     void testToStringOverrideEmpty() {

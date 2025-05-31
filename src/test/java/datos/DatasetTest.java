@@ -16,15 +16,34 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @file DatasetTest.java
+ * @brief Clase de pruebas unitarias para la clase Dataset.
+ *
+ * Esta clase contiene pruebas JUnit 5 para verificar la correcta funcionalidad
+ * de la clase Dataset, incluyendo sus constructores, métodos de manipulación
+ * de datos (atributos y casos), y operaciones de lectura/escritura de archivos.
+ */
 @DisplayName("Tests de la Clase Dataset")
 class DatasetTest {
 
     private Dataset dataset;
 
-    // Usar TempDir para crear archivos temporales para pruebas de lectura/escritura
+    /**
+     * @brief Directorio temporal para la creación de archivos de prueba.
+     *
+     * Anotado con @TempDir, JUnit creará y limpiará automáticamente este directorio
+     * para cada método de prueba que lo necesite.
+     */
     @TempDir
     File tempDir;
 
+    /**
+     * @brief Configuración inicial antes de cada prueba.
+     *
+     * Inicializa una nueva instancia de Dataset antes de la ejecución de cada test,
+     * asegurando un estado limpio para cada prueba.
+     */
     @BeforeEach
     void setUp() {
         dataset = new Dataset();
@@ -32,6 +51,12 @@ class DatasetTest {
 
     // --- Constructor Tests ---
 
+    /**
+     * @brief Prueba el constructor sin argumentos de la clase Dataset.
+     *
+     * Verifica que se cree una instancia de Dataset no nula, con una lista de atributos
+     * vacía pero no nula, y que el valor de preprocesado por defecto sea 0.
+     */
     @Test
     @DisplayName("Debería crear un Dataset vacío con el constructor sin argumentos")
     void testConstructorVacio() {
@@ -41,6 +66,13 @@ class DatasetTest {
         assertEquals(0, dataset.getPreprocesado()); // Valor por defecto
     }
 
+    /**
+     * @brief Prueba el constructor de Dataset que acepta una lista de atributos.
+     *
+     * Verifica que el Dataset se inicialice correctamente con la lista de atributos
+     * proporcionada, que la lista interna sea una copia defensiva (nueva instancia),
+     * pero que los objetos Atributo sean las mismas referencias.
+     */
     @Test
     @DisplayName("Debería crear un Dataset con una lista de atributos existente")
     void testConstructorConListaAtributos() {
@@ -58,6 +90,14 @@ class DatasetTest {
         assertSame(attr1, newDataset.getAtributos().get(0)); // Las referencias a los atributos son las mismas
     }
 
+    /**
+     * @brief Prueba el constructor de Dataset que lee datos desde un archivo.
+     *
+     * Crea un archivo CSV temporal, lo escribe con datos de prueba y luego
+     * verifica que el constructor lea e interprete correctamente los datos,
+     * incluyendo el número de atributos y casos, y la inferencia de tipos (Cuantitativo/Cualitativo).
+     * @throws IOException Si ocurre un error durante la creación o lectura del archivo.
+     */
     @Test
     @DisplayName("Debería crear un Dataset leyendo desde un archivo")
     void testConstructorConFilename() throws IOException {
@@ -98,6 +138,13 @@ class DatasetTest {
         assertEquals(25.0, ((Cuantitativo) datasetFromFile.getAtributos().get(2)).getValor(2));
     }
 
+    /**
+     * @brief Prueba el constructor de copia superficial de la clase Dataset.
+     *
+     * Verifica que al copiar un Dataset, la nueva instancia tenga su propia lista
+     * de atributos, pero que los objetos Atributo dentro de esa lista sean los
+     * mismos objetos (copia superficial). También verifica la copia del estado de preprocesado.
+     */
     @Test
     @DisplayName("Debería crear una copia superficial de otro Dataset usando el constructor de copia")
     void testConstructorCopia() {
@@ -123,6 +170,12 @@ class DatasetTest {
 
     // --- Métodos de Manipulación de Pesos ---
 
+    /**
+     * @brief Prueba el método cambiarPeso(List<String>).
+     *
+     * Verifica que los pesos de los atributos se actualicen correctamente
+     * cuando se proporciona una lista de strings que representan los nuevos pesos.
+     */
     @Test
     @DisplayName("Debería cambiar los pesos de los atributos correctamente")
     void testCambiarPesoListaString() {
@@ -138,6 +191,12 @@ class DatasetTest {
         assertEquals(0.8, dataset.getAtributos().get(1).getPeso(), 0.001);
     }
 
+    /**
+     * @brief Prueba el método cambiarPeso(List<String>) cuando el número de pesos no coincide.
+     *
+     * Verifica que se lance una IllegalArgumentException si el número de pesos en la lista
+     * proporcionada no coincide con el número de atributos en el Dataset.
+     */
     @Test
     @DisplayName("Debería lanzar IllegalArgumentException si el número de pesos no coincide")
     void testCambiarPesoListaStringNumeroNoCoincide() {
@@ -147,6 +206,12 @@ class DatasetTest {
         assertThrows(IllegalArgumentException.class, () -> dataset.cambiarPeso(nuevosPesos));
     }
 
+    /**
+     * @brief Prueba el método cambiarPeso(List<String>) con un formato de peso inválido.
+     *
+     * Verifica que se lance una IllegalArgumentException si alguno de los strings
+     * de la lista no puede ser parseado como un número de punto flotante válido.
+     */
     @Test
     @DisplayName("Debería lanzar IllegalArgumentException si un peso no es un número válido")
     void testCambiarPesoListaStringFormatoInvalido() {
@@ -158,6 +223,12 @@ class DatasetTest {
         assertThrows(IllegalArgumentException.class, () -> dataset.cambiarPeso(nuevosPesos));
     }
 
+    /**
+     * @brief Prueba el método cambiarPeso(List<String>) con un peso fuera del rango [0, 1].
+     *
+     * Verifica que se lance una IllegalArgumentException si alguno de los pesos
+     * proporcionados está fuera del rango permitido (0 a 1).
+     */
     @Test
     @DisplayName("Debería lanzar IllegalArgumentException si un peso está fuera del rango [0, 1]")
     void testCambiarPesoListaStringRangoInvalido() {
@@ -169,6 +240,12 @@ class DatasetTest {
         assertThrows(IllegalArgumentException.class, () -> dataset.cambiarPeso(nuevosPesos));
     }
 
+    /**
+     * @brief Prueba el método cambiarPeso(int, double).
+     *
+     * Verifica que el peso de un atributo específico se actualice correctamente
+     * dado su índice y un nuevo valor de peso.
+     */
     @Test
     @DisplayName("Debería cambiar el peso de un atributo específico por índice")
     void testCambiarPesoPorIndice() {
@@ -182,6 +259,12 @@ class DatasetTest {
         assertEquals(1.0, dataset.getAtributos().get(1).getPeso(), 0.001); // El otro no cambia
     }
 
+    /**
+     * @brief Prueba el método cambiarPeso(int, double) con un índice inválido.
+     *
+     * Verifica que se lance una IndexOutOfBoundsException si el índice proporcionado
+     * para cambiar el peso de un atributo está fuera de los límites.
+     */
     @Test
     @DisplayName("Debería lanzar IndexOutOfBoundsException al cambiar peso por índice inválido")
     void testCambiarPesoPorIndiceInvalido() {
@@ -189,6 +272,12 @@ class DatasetTest {
         assertThrows(IndexOutOfBoundsException.class, () -> dataset.cambiarPeso(1, 0.5));
     }
 
+    /**
+     * @brief Prueba el método cambiarPeso(int, double) con un peso fuera del rango [0, 1].
+     *
+     * Verifica que se lance una IllegalArgumentException si el peso proporcionado
+     * para un atributo está fuera del rango permitido (0 a 1).
+     */
     @Test
     @DisplayName("Debería lanzar IllegalArgumentException al cambiar peso por índice con peso fuera de rango")
     void testCambiarPesoPorIndiceRangoInvalido() {
@@ -196,6 +285,12 @@ class DatasetTest {
         assertThrows(IllegalArgumentException.class, () -> dataset.cambiarPeso(0, 1.5));
     }
 
+    /**
+     * @brief Prueba el método cambiarPeso(double).
+     *
+     * Verifica que el peso de todos los atributos en el Dataset se establezca
+     * al valor único proporcionado.
+     */
     @Test
     @DisplayName("Debería cambiar el peso de todos los atributos a un valor único")
     void testCambiarPesoTodos() {
@@ -209,6 +304,12 @@ class DatasetTest {
         assertEquals(0.75, dataset.getAtributos().get(2).getPeso(), 0.001);
     }
 
+    /**
+     * @brief Prueba el método cambiarPeso(double) con un peso fuera del rango [0, 1].
+     *
+     * Verifica que se lance una IllegalArgumentException si el peso único
+     * proporcionado está fuera del rango permitido (0 a 1).
+     */
     @Test
     @DisplayName("Debería lanzar IllegalArgumentException al cambiar peso a todos con peso fuera de rango")
     void testCambiarPesoTodosRangoInvalido() {
@@ -218,6 +319,12 @@ class DatasetTest {
 
     // --- Métodos de Manipulación de Casos (Instancias) ---
 
+    /**
+     * @brief Prueba el método add(Instancia).
+     *
+     * Verifica que una nueva Instancia se añada correctamente a los atributos
+     * correspondientes del Dataset, incrementando el número de casos.
+     */
     @Test
     @DisplayName("Debería añadir una nueva instancia a los atributos existentes")
     void testAddInstancia() {
@@ -238,6 +345,12 @@ class DatasetTest {
         assertEquals("Y", (String) attr2.getValor(1));
     }
 
+    /**
+     * @brief Prueba el método add(Instancia) con una instancia de tamaño incorrecto.
+     *
+     * Verifica que se lance una IllegalArgumentException si la Instancia a añadir
+     * no tiene el mismo número de valores que el número de atributos del Dataset.
+     */
     @Test
     @DisplayName("Debería lanzar IllegalArgumentException si la instancia tiene un tamaño incorrecto")
     void testAddInstanciaTamanioIncorrecto() {
@@ -250,6 +363,11 @@ class DatasetTest {
         assertThrows(IllegalArgumentException.class, () -> dataset.add(nueva));
     }
 
+    /**
+     * @brief Prueba el método add(Instancia) con una instancia nula.
+     *
+     * Verifica que se lance una IllegalArgumentException si la Instancia a añadir es nula.
+     */
     @Test
     @DisplayName("Debería lanzar IllegalArgumentException si la instancia es nula")
     void testAddInstanciaNula() {
@@ -258,6 +376,13 @@ class DatasetTest {
     }
 
 
+    /**
+     * @brief Prueba el método add(List<String>).
+     *
+     * Verifica que una nueva fila de valores (proporcionada como una lista de strings)
+     * se añada correctamente a los atributos, con la conversión de tipos adecuada
+     * (e.g., "25.0" a Double para Cuantitativo, "Madrid" a String para Cualitativo).
+     */
     @Test
     @DisplayName("Debería añadir una nueva fila de valores (String) convirtiendo según el tipo de atributo")
     void testAddListaString() {
@@ -291,6 +416,12 @@ class DatasetTest {
         assertEquals(60000.75, (Double) attr3.getValor(1));
     }
 
+    /**
+     * @brief Prueba el método add(List<String>) con una lista de strings de tamaño incorrecto.
+     *
+     * Verifica que se lance una IllegalArgumentException si el número de valores en la lista
+     * de strings no coincide con el número de atributos del Dataset.
+     */
     @Test
     @DisplayName("Debería lanzar IllegalArgumentException si la lista de strings tiene tamaño incorrecto")
     void testAddListaStringTamanioIncorrecto() {
@@ -300,6 +431,11 @@ class DatasetTest {
         assertThrows(IllegalArgumentException.class, () -> dataset.add(nuevaFila));
     }
 
+    /**
+     * @brief Prueba el método add(List<String>) con una lista de strings nula.
+     *
+     * Verifica que se lance una IllegalArgumentException si la lista de strings a añadir es nula.
+     */
     @Test
     @DisplayName("Debería lanzar IllegalArgumentException si la lista de strings es nula")
     void testAddListaStringNula() {
@@ -308,6 +444,12 @@ class DatasetTest {
     }
 
 
+    /**
+     * @brief Prueba el método add(List<String>) con un tipo de valor incompatible para un atributo cuantitativo.
+     *
+     * Verifica que se lance una ClassCastException (o similar) si se intenta añadir
+     * un valor no numérico a un atributo de tipo Cuantitativo.
+     */
     @Test
     @DisplayName("Debería lanzar ClassCastException si un valor no numérico se añade a un atributo cuantitativo")
     void testAddListaStringTipoIncompatibleCuantitativo() {
@@ -318,6 +460,12 @@ class DatasetTest {
         assertThrows(ClassCastException.class, () -> dataset.add(nuevaFila));
     }
 
+    /**
+     * @brief Prueba el método add(List<String>) con un tipo de valor incompatible para un atributo cualitativo.
+     *
+     * Verifica que se lance una ClassCastException (o similar) si se intenta añadir
+     * un valor numérico (que se parsea a Double) a un atributo de tipo Cualitativo.
+     */
     @Test
     @DisplayName("Debería lanzar ClassCastException si un valor numérico se añade a un atributo cualitativo")
     void testAddListaStringTipoIncompatibleCualitativo() {
@@ -328,6 +476,12 @@ class DatasetTest {
         assertThrows(ClassCastException.class, () -> dataset.add(nuevaFila));
     }
 
+    /**
+     * @brief Prueba el método delete(int).
+     *
+     * Verifica que un caso (fila completa de valores) se elimine correctamente
+     * de todos los atributos dado su índice.
+     */
     @Test
     @DisplayName("Debería eliminar un caso (fila) por índice")
     void testDelete() {
@@ -349,6 +503,12 @@ class DatasetTest {
         assertEquals("Z", (String) attr2.getValor(1)); // El tercer caso ahora es el segundo
     }
 
+    /**
+     * @brief Prueba el método delete(int) con un índice fuera de límites.
+     *
+     * Verifica que se lance una IndexOutOfBoundsException si el índice proporcionado
+     * para eliminar un caso está fuera de los límites válidos del Dataset.
+     */
     @Test
     @DisplayName("Debería lanzar IndexOutOfBoundsException al eliminar un caso fuera de límites")
     void testDeleteOutOfBounds() {
@@ -360,6 +520,12 @@ class DatasetTest {
         assertThrows(IndexOutOfBoundsException.class, () -> dataset.delete(-1));
     }
 
+    /**
+     * @brief Prueba el método delete(int) en un Dataset vacío.
+     *
+     * Verifica que se lance una IndexOutOfBoundsException si se intenta eliminar
+     * un caso de un Dataset que no contiene ningún caso.
+     */
     @Test
     @DisplayName("Debería lanzar IndexOutOfBoundsException al eliminar un caso de un Dataset vacío")
     void testDeleteDatasetVacio() {
@@ -369,6 +535,14 @@ class DatasetTest {
 
     // --- Métodos de Lectura/Escritura de Archivos ---
 
+    /**
+     * @brief Prueba los métodos write y read para la persistencia del Dataset.
+     *
+     * Prepara un Dataset con datos, lo escribe en un archivo CSV temporal,
+     * y luego lee ese archivo en una nueva instancia de Dataset para verificar
+     * que los datos se han guardado y cargado correctamente.
+     * @throws IOException Si ocurre un error durante las operaciones de I/O.
+     */
     @Test
     @DisplayName("Debería escribir el dataset en un archivo CSV y luego leerlo correctamente")
     void testWriteAndRead() throws IOException {
@@ -397,12 +571,21 @@ class DatasetTest {
 
         // Tipos y valores
         assertTrue(readDataset.getAtributos().get(0) instanceof Cuantitativo);
+        assertEquals(1.1, ((Cuantitativo) readDataset.getAtributos().get(0)).getValor(0));
+        assertEquals(2.2, ((Cuantitativo) readDataset.getAtributos().get(0)).getValor(1));
 
         assertTrue(readDataset.getAtributos().get(1) instanceof Cualitativo);
         assertEquals("Roja", ((Cualitativo) readDataset.getAtributos().get(1)).getValor(0));
         assertEquals("Azul", ((Cualitativo) readDataset.getAtributos().get(1)).getValor(1));
     }
 
+    /**
+     * @brief Prueba el método read cuando se intenta leer un archivo vacío.
+     *
+     * Verifica que el Dataset resultante esté vacío (cero atributos y cero casos)
+     * cuando se lee desde un archivo CSV sin contenido.
+     * @throws IOException Si ocurre un error de I/O.
+     */
     @Test
     @DisplayName("Debería manejar archivo vacío al leer")
     void testReadEmptyFile() throws IOException {
@@ -417,6 +600,13 @@ class DatasetTest {
         assertEquals(0, emptyDataset.numeroCasos()); // numeroCasos() ya no lanza error para dataset vacío
     }
 
+    /**
+     * @brief Prueba el método read cuando se intenta leer un archivo con solo el encabezado.
+     *
+     * Verifica que se creen los atributos basándose en el encabezado, pero que el Dataset
+     * no contenga ningún caso, y que los atributos estén vacíos de valores.
+     * @throws IOException Si ocurre un error de I/O.
+     */
     @Test
     @DisplayName("Debería manejar archivo con solo encabezado al leer")
     void testReadHeaderOnlyFile() throws IOException {
@@ -438,6 +628,11 @@ class DatasetTest {
 
     // --- Métodos de Acceso y Utilidad ---
 
+    /**
+     * @brief Prueba el método numeroAtributos().
+     *
+     * Verifica que el método devuelva el número correcto de atributos en el Dataset.
+     */
     @Test
     @DisplayName("Debería retornar el número correcto de atributos")
     void testNumeroAtributos() {
@@ -448,6 +643,11 @@ class DatasetTest {
         assertEquals(2, dataset.numeroAtributos());
     }
 
+    /**
+     * @brief Prueba el método nombreAtributos().
+     *
+     * Verifica que el método devuelva una lista con los nombres de todos los atributos.
+     */
     @Test
     @DisplayName("Debería retornar los nombres de los atributos")
     void testNombreAtributos() {
@@ -459,6 +659,12 @@ class DatasetTest {
         assertTrue(nombres.contains("Attr2"));
     }
 
+    /**
+     * @brief Prueba el método getAtributos().
+     *
+     * Verifica que el método devuelva la lista interna de objetos Atributo
+     * y que las referencias sean las mismas.
+     */
     @Test
     @DisplayName("Debería retornar la lista de objetos Atributo")
     void testGetAtributos() {
@@ -470,6 +676,13 @@ class DatasetTest {
         assertSame(attr, retrievedAttrs.get(0)); // Verifica que sea la misma referencia
     }
 
+    /**
+     * @brief Prueba el método getAtributosEmpty().
+     *
+     * Verifica que el método devuelva una nueva lista de atributos, donde
+     * cada atributo es una nueva instancia del mismo tipo, con el mismo nombre y peso,
+     * pero con su lista de valores vacía.
+     */
     @Test
     @DisplayName("Debería retornar una lista de atributos vacíos con los mismos nombres y pesos")
     void testGetAtributosEmpty() {
@@ -501,6 +714,12 @@ class DatasetTest {
         assertNotSame(originalQual, emptyAttrs.get(1)); // Debe ser una nueva instancia
     }
 
+    /**
+     * @brief Prueba el método numeroCasos().
+     *
+     * Verifica que el método devuelva el número correcto de casos (filas) en el Dataset,
+     * que es el tamaño de los valores del primer atributo.
+     */
     @Test
     @DisplayName("Debería retornar el número correcto de casos (filas)")
     void testNumeroCasos() {
@@ -516,12 +735,23 @@ class DatasetTest {
         assertEquals(3, dataset.numeroCasos());
     }
 
+    /**
+     * @brief Prueba el método numeroCasos() en un Dataset vacío.
+     *
+     * Verifica que el método devuelva 0 si el Dataset no contiene atributos.
+     */
     @Test
     @DisplayName("Debería retornar 0 si numeroCasos se llama en un Dataset vacío")
     void testNumeroCasosDatasetVacio() {
         assertEquals(0, dataset.numeroCasos());
     }
 
+    /**
+     * @brief Prueba el método getValores().
+     *
+     * Verifica que el método devuelva una lista de String que contiene todos los valores
+     * del Dataset, serializados y concatenados por filas (aunque se devuelvan en una lista plana).
+     */
     @Test
     @DisplayName("Debería retornar una lista de todos los valores del dataset serializados como String")
     void testGetValores() {
@@ -545,6 +775,11 @@ class DatasetTest {
     }
 
 
+    /**
+     * @brief Prueba el método get(int) para obtener un atributo por índice.
+     *
+     * Verifica que el método devuelva el objeto Atributo correcto en el índice especificado.
+     */
     @Test
     @DisplayName("Debería retornar un atributo específico por índice")
     void testGetAtributoPorIndice() {
@@ -557,6 +792,12 @@ class DatasetTest {
         assertSame(attr2, dataset.get(1));
     }
 
+    /**
+     * @brief Prueba el método get(int) con un índice fuera de límites.
+     *
+     * Verifica que se lance una IndexOutOfBoundsException si el índice proporcionado
+     * para obtener un atributo está fuera de los límites válidos.
+     */
     @Test
     @DisplayName("Debería lanzar IndexOutOfBoundsException al obtener atributo por índice fuera de límites")
     void testGetAtributoPorIndiceFueraLimites() {
@@ -564,6 +805,12 @@ class DatasetTest {
         assertThrows(IndexOutOfBoundsException.class, () -> dataset.get(1));
     }
 
+    /**
+     * @brief Prueba el método getInstance(int).
+     *
+     * Verifica que el método construya y devuelva correctamente una Instancia (fila de datos)
+     * para el índice de caso especificado, combinando los valores de los atributos.
+     */
     @Test
     @DisplayName("Debería retornar una instancia (fila) por índice")
     void testGetInstance() {
@@ -587,6 +834,12 @@ class DatasetTest {
         assertEquals("Inactivo", (String) instance1.getValores().get(1));
     }
 
+    /**
+     * @brief Prueba el método getInstance(int) con un índice fuera de límites.
+     *
+     * Verifica que se lance una IndexOutOfBoundsException si el índice proporcionado
+     * para obtener una instancia está fuera de los límites válidos del Dataset.
+     */
     @Test
     @DisplayName("Debería lanzar IndexOutOfBoundsException al obtener instancia fuera de límites")
     void testGetInstanceOutOfBounds() {
@@ -598,6 +851,12 @@ class DatasetTest {
         assertThrows(IndexOutOfBoundsException.class, () -> dataset.getInstance(-1));
     }
 
+    /**
+     * @brief Prueba el método getInstance(int) en un Dataset vacío.
+     *
+     * Verifica que se lance una IndexOutOfBoundsException si se intenta obtener
+     * una instancia de un Dataset que no contiene ningún caso.
+     */
     @Test
     @DisplayName("Debería lanzar IndexOutOfBoundsException al obtener instancia de un Dataset vacío")
     void testGetInstanceDatasetVacio() {
@@ -605,6 +864,13 @@ class DatasetTest {
         assertThrows(IndexOutOfBoundsException.class, () -> dataset.getInstance(0));
     }
 
+    /**
+     * @brief Prueba el método getPesos().
+     *
+     * Verifica que el método devuelva una lista de String que representa
+     * los nombres y pesos de cada atributo, en el formato "Nombre: Peso".
+     * @return Una lista de String con los pesos de los atributos.
+     */
     @Test
     @DisplayName("Debería retornar una lista de pesos de atributos como String")
     void testGetPesos() {
@@ -621,6 +887,13 @@ class DatasetTest {
         assertEquals("B: 1.0", pesos.get(1));
     }
 
+    /**
+     * @brief Prueba el método getPesosDouble().
+     *
+     * Verifica que el método devuelva una lista de Double que contiene
+     * solo los valores numéricos de los pesos de los atributos.
+     * @return Una lista de Double con los pesos de los atributos.
+     */
     @Test
     @DisplayName("Debería retornar una lista de pesos de atributos como Double")
     void testGetPesosDouble() {
@@ -637,6 +910,13 @@ class DatasetTest {
         assertEquals(1.0, pesos.get(1), 0.001);
     }
 
+    /**
+     * @brief Prueba el método getClases().
+     *
+     * Verifica que el método identifique el último atributo como el atributo de clase
+     * (debe ser Cualitativo) y devuelva una lista de sus valores únicos (clases).
+     * @return Una lista de String con las clases únicas.
+     */
     @Test
     @DisplayName("Debería obtener las clases del atributo cualitativo final")
     void testGetClases() {
@@ -658,6 +938,12 @@ class DatasetTest {
         assertTrue(clases.contains("ClaseB"));
     }
 
+    /**
+     * @brief Prueba el método getClases() cuando el último atributo no es Cualitativo.
+     *
+     * Verifica que se lance una ClassCastException si el último atributo del Dataset
+     * no es de tipo Cualitativo, impidiendo la obtención de clases.
+     */
     @Test
     @DisplayName("Debería lanzar ClassCastException si el último atributo no es cualitativo para getClases")
     void testGetClasesLastAttrNotCualitativo() {
@@ -667,12 +953,24 @@ class DatasetTest {
         assertThrows(ClassCastException.class, () -> dataset.getClases());
     }
 
+    /**
+     * @brief Prueba el método getClases() en un Dataset sin atributos.
+     *
+     * Verifica que se lance una IllegalStateException si se intenta obtener
+     * las clases de un Dataset que no contiene ningún atributo.
+     */
     @Test
     @DisplayName("Debería lanzar IllegalStateException si getClases se llama en un Dataset sin atributos")
     void testGetClasesNoAttributes() {
         assertThrows(IllegalStateException.class, () -> dataset.getClases());
     }
 
+    /**
+     * @brief Prueba los métodos getPreprocesado() y setPreprocesado().
+     *
+     * Verifica que el valor de preprocesado se pueda obtener y establecer correctamente.
+     * @return El valor entero de preprocesado.
+     */
     @Test
     @DisplayName("Debería obtener y establecer el valor de preprocesado")
     void testGetSetPreprocesado() {
@@ -681,6 +979,12 @@ class DatasetTest {
         assertEquals(2, dataset.getPreprocesado());
     }
 
+    /**
+     * @brief Prueba el método setAtributos(List<Atributo>).
+     *
+     * Verifica que la lista interna de atributos del Dataset sea reemplazada
+     * por la nueva lista proporcionada.
+     */
     @Test
     @DisplayName("Debería establecer una nueva lista de atributos")
     void testSetAtributos() {
@@ -695,6 +999,13 @@ class DatasetTest {
 
     // --- Otros Métodos ---
 
+    /**
+     * @brief Prueba el método toString().
+     *
+     * Verifica que el método devuelva una representación en formato CSV
+     * del Dataset, incluyendo encabezados y filas de datos.
+     * @return Una representación String del Dataset en formato CSV.
+     */
     @Test
     @DisplayName("Debería generar una representación String correcta del Dataset")
     void testToString() {
@@ -714,6 +1025,13 @@ class DatasetTest {
         assertEquals(expected, dataset.toString());
     }
 
+    /**
+     * @brief Prueba el método toString() para un Dataset vacío.
+     *
+     * Verifica que el método devuelva una cadena vacía cuando el Dataset
+     * no contiene ningún atributo ni caso.
+     * @return Una cadena vacía.
+     */
     @Test
     @DisplayName("Debería generar una representación String vacía para un Dataset vacío")
     void testToStringVacio() {

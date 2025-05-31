@@ -10,11 +10,25 @@ import java.util.List; // Necesario para List
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * \brief Clase de pruebas unitarias para la clase Cuantitativo.
+ *
+ * Contiene tests para verificar el correcto funcionamiento de los constructores,
+ * los métodos de acceso (getters y setters), los métodos específicos de atributos cuantitativos
+ * (mínimo, máximo, media, desviación estándar, estandarización),
+ * y los métodos heredados de Atributo que son sobrescritos.
+ */
 @DisplayName("Tests de la Clase Cuantitativo")
 class CuantitativoTest {
 
     private Cuantitativo cuantitativo;
 
+    /**
+     * \brief Configura el entorno de prueba antes de cada método de test.
+     *
+     * Inicializa una nueva instancia de `Cuantitativo` para asegurar un estado limpio
+     * en cada ejecución de prueba.
+     */
     @BeforeEach
     void setUp() {
         // Inicializa una nueva instancia de Cuantitativo antes de cada test
@@ -23,6 +37,13 @@ class CuantitativoTest {
 
     // --- Tests de Constructores ---
 
+    /**
+     * \brief Prueba el constructor sin argumentos de `Cuantitativo`.
+     *
+     * Verifica que la instancia de `Cuantitativo` se inicialice correctamente con
+     * un nombre vacío por defecto, un peso por defecto de 1.0 (heredado de Atributo),
+     * y un `Vector` de valores vacío.
+     */
     @Test
     @DisplayName("Debería crear un Cuantitativo vacío con el constructor sin argumentos")
     void testConstructorVacio() {
@@ -33,6 +54,12 @@ class CuantitativoTest {
         assertEquals(0, cuantitativo.getValores().size()); // Ahora usa size()
     }
 
+    /**
+     * \brief Prueba el constructor de `Cuantitativo` que toma un nombre.
+     *
+     * Verifica que la instancia se inicialice con el nombre proporcionado,
+     * el peso por defecto y un `Vector` de valores vacío.
+     */
     @Test
     @DisplayName("Debería crear un Cuantitativo con el constructor de nombre")
     void testConstructorConNombre() {
@@ -43,6 +70,12 @@ class CuantitativoTest {
         assertEquals(0, namedCuantitativo.getValores().size()); // Ahora usa size()
     }
 
+    /**
+     * \brief Prueba el constructor de `Cuantitativo` que toma un nombre y un valor `Double` único.
+     *
+     * Verifica que la instancia se inicialice con el nombre especificado y
+     * el valor `Double` añadido a su `Vector` interno.
+     */
     @Test
     @DisplayName("Debería crear un Cuantitativo con el constructor de nombre y valor Double único")
     void testConstructorConNombreYValorUnico() {
@@ -54,6 +87,12 @@ class CuantitativoTest {
         assertEquals(175.5, (Double) singleValueCuantitativo.getValor(0));
     }
 
+    /**
+     * \brief Prueba el constructor de `Cuantitativo` que toma un nombre y un objeto `Vector` de valores.
+     *
+     * Verifica que la instancia se inicialice con el nombre y el `Vector` de valores
+     * proporcionados, y que el `Vector` interno sea la misma instancia que la pasada.
+     */
     @Test
     @DisplayName("Debería crear un Cuantitativo con el constructor de nombre y Vector de valores")
     void testConstructorConNombreYVectorDeValores() {
@@ -77,6 +116,12 @@ class CuantitativoTest {
         // En tu Cuantitativo.java, getValores() retorna this.valores, así que es el mismo objeto Vector.
     }
 
+    /**
+     * \brief Prueba el constructor de copia de `Cuantitativo`.
+     *
+     * Verifica que se cree una nueva instancia de `Cuantitativo` con el mismo nombre y
+     * peso que el original, pero con un `Vector` de valores *vacío* y diferente instancia.
+     */
     @Test
     @DisplayName("Debería crear una copia profunda de otra instancia de Cuantitativo usando el constructor de copia")
     void testCopyConstructor() {
@@ -95,6 +140,12 @@ class CuantitativoTest {
 
     // --- Tests de Getters y Setters ---
 
+    /**
+     * \brief Prueba el método `getValores()`.
+     *
+     * Verifica que `getValores()` retorne una referencia al `Vector` interno de valores.
+     * Esto significa que la modificación del `Vector` retornado afectaría el estado interno.
+     */
     @Test
     @DisplayName("Debería retornar el Vector interno de valores de getValores (referencia al mismo objeto Vector)")
     void testGetValores() {
@@ -109,6 +160,12 @@ class CuantitativoTest {
         assertSame(initialVector, retrievedVector); // Asegura que es el mismo objeto Vector
     }
 
+    /**
+     * \brief Prueba el método `setValores()`.
+     *
+     * Verifica que `setValores()` reemplace correctamente el `Vector` interno
+     * con una nueva instancia proporcionada, manteniendo una asignación superficial.
+     */
     @Test
     @DisplayName("Debería permitir establecer un nuevo Vector de valores")
     void testSetValores() {
@@ -122,6 +179,11 @@ class CuantitativoTest {
         assertSame(newValues, cuantitativo.getValores()); // Verifica la asignación superficial
     }
 
+    /**
+     * \brief Prueba el método heredado `getNombre()`.
+     *
+     * Verifica que el nombre del atributo se pueda establecer y recuperar correctamente.
+     */
     @Test
     @DisplayName("Debería retornar correctamente el nombre (heredado)")
     void testGetNombreHeredado() {
@@ -129,6 +191,11 @@ class CuantitativoTest {
         assertEquals("NombrePrueba", cuantitativo.getNombre());
     }
 
+    /**
+     * \brief Prueba el método heredado `getPeso()`.
+     *
+     * Verifica que el peso del atributo se pueda establecer y recuperar correctamente.
+     */
     @Test
     @DisplayName("Debería retornar correctamente el peso (heredado)")
     void testGetPesoHeredado() {
@@ -136,6 +203,12 @@ class CuantitativoTest {
         assertEquals(3.0, cuantitativo.getPeso());
     }
 
+    /**
+     * \brief Prueba el método heredado `get()` de `Atributo`.
+     *
+     * Verifica que el método `get()` retorne una cadena con el nombre y el peso
+     * del atributo en el formato esperado.
+     */
     @Test
     @DisplayName("Debería retornar el nombre y el peso en el formato del método 'get' (heredado)")
     void testGetMethodHeredado() {
@@ -146,6 +219,11 @@ class CuantitativoTest {
 
     // --- Tests de Métodos Específicos Cuantitativos ---
 
+    /**
+     * \brief Prueba el método `minimo()`.
+     *
+     * Verifica que `minimo()` retorne el valor más bajo en el `Vector` de valores.
+     */
     @Test
     @DisplayName("Debería retornar el valor mínimo")
     void testMinimo() {
@@ -153,6 +231,11 @@ class CuantitativoTest {
         assertEquals(-2.0, cuantitativo.minimo());
     }
 
+    /**
+     * \brief Prueba `minimo()` con un solo elemento.
+     *
+     * Verifica que `minimo()` retorne el propio valor si solo hay un elemento.
+     */
     @Test
     @DisplayName("Debería retornar el valor mínimo para un solo elemento")
     void testMinimoUnicoElemento() {
@@ -160,6 +243,11 @@ class CuantitativoTest {
         assertEquals(100.0, cuantitativo.minimo());
     }
 
+    /**
+     * \brief Prueba que `minimo()` lance `IllegalStateException` cuando el vector está vacío.
+     *
+     * Verifíca que el método delegue correctamente la excepción de un vector vacío.
+     */
     @Test
     @DisplayName("Debería lanzar IllegalStateException cuando minimo se llama en un vector vacío")
     void testMinimoVacio() {
@@ -168,6 +256,11 @@ class CuantitativoTest {
     }
 
 
+    /**
+     * \brief Prueba el método `maximo()`.
+     *
+     * Verifica que `maximo()` retorne el valor más alto en el `Vector` de valores.
+     */
     @Test
     @DisplayName("Debería retornar el valor máximo")
     void testMaximo() {
@@ -175,6 +268,11 @@ class CuantitativoTest {
         assertEquals(8.0, cuantitativo.maximo());
     }
 
+    /**
+     * \brief Prueba `maximo()` con un solo elemento.
+     *
+     * Verifica que `maximo()` retorne el propio valor si solo hay un elemento.
+     */
     @Test
     @DisplayName("Debería retornar el valor máximo para un solo elemento")
     void testMaximoUnicoElemento() {
@@ -182,6 +280,11 @@ class CuantitativoTest {
         assertEquals(100.0, cuantitativo.maximo());
     }
 
+    /**
+     * \brief Prueba que `maximo()` lance `IllegalStateException` cuando el vector está vacío.
+     *
+     * Verifíca que el método delegue correctamente la excepción de un vector vacío.
+     */
     @Test
     @DisplayName("Debería lanzar IllegalStateException cuando maximo se llama en un vector vacío")
     void testMaximoVacio() {
@@ -190,6 +293,11 @@ class CuantitativoTest {
     }
 
 
+    /**
+     * \brief Prueba el método `media()`.
+     *
+     * Verifica que `media()` calcule correctamente la media aritmética de los valores.
+     */
     @Test
     @DisplayName("Debería calcular la media correcta")
     void testMedia() {
@@ -197,6 +305,11 @@ class CuantitativoTest {
         assertEquals(3.0, cuantitativo.media(), 0.001);
     }
 
+    /**
+     * \brief Prueba `media()` con valores negativos.
+     *
+     * Verifica que `media()` calcule correctamente la media para valores negativos.
+     */
     @Test
     @DisplayName("Debería calcular la media correcta para valores negativos")
     void testMediaValoresNegativos() {
@@ -204,6 +317,11 @@ class CuantitativoTest {
         assertEquals(-20.0, cuantitativo.media(), 0.001);
     }
 
+    /**
+     * \brief Prueba `media()` con un solo elemento.
+     *
+     * Verifica que `media()` retorne el propio valor si solo hay un elemento.
+     */
     @Test
     @DisplayName("Debería calcular la media correcta para un solo elemento")
     void testMediaUnicoElemento() {
@@ -211,19 +329,28 @@ class CuantitativoTest {
         assertEquals(42.0, cuantitativo.media(), 0.001);
     }
 
+    /**
+     * \brief Prueba que `media()` lance `IllegalStateException` cuando el vector está vacío.
+     *
+     * Debido a la implementación de `media()` en `Cuantitativo` que accede directamente
+     * a `valores.get(0)`, este test verifica que lance la excepción adecuada.
+     */
     @Test
     @DisplayName("Debería lanzar IllegalStateException cuando media se llama en un vector vacío")
     void testMediaVacio() {
         // La implementación de Cuantitativo.media() llama a get(0) directamente.
         // Sin embargo, tu Cuantitativo.media() no verifica si el vector está vacío.
-        // Si tu Vector.get(0) lanza IndexOutOfBoundsException para vacío, este test debe reflejarlo.
-        // Pero tu método `media()` de Cuantitativo es diferente al `avg()` de Vector.
         // Tu `media()` de Cuantitativo tiene este código: `double media = this.valores.get(0);`
         // Esto lanzará `IndexOutOfBoundsException` si `valores` está vacío.
         assertThrows(IllegalStateException.class, () -> cuantitativo.media());
     }
 
 
+    /**
+     * \brief Prueba el método `desviacion()`.
+     *
+     * Verifica que `desviacion()` calcule correctamente la desviación estándar poblacional.
+     */
     @Test
     @DisplayName("Debería calcular la desviación estándar poblacional correcta")
     void testDesviacion() {
@@ -237,6 +364,11 @@ class CuantitativoTest {
         assertEquals(0.81649658, cuantitativo.desviacion(), 0.0000001);
     }
 
+    /**
+     * \brief Prueba `desviacion()` cuando todos los valores son idénticos.
+     *
+     * Verifica que la desviación estándar sea 0.0 si todos los valores son iguales.
+     */
     @Test
     @DisplayName("Debería retornar 0 para la desviación estándar si todos los valores son idénticos")
     void testDesviacionTodosIdenticos() {
@@ -244,6 +376,11 @@ class CuantitativoTest {
         assertEquals(0.0, cuantitativo.desviacion(), 0.001);
     }
 
+    /**
+     * \brief Prueba `desviacion()` con un solo elemento.
+     *
+     * Verifica que la desviación estándar sea 0.0 si solo hay un elemento.
+     */
     @Test
     @DisplayName("Debería retornar 0 para la desviación estándar con un solo elemento")
     void testDesviacionUnicoElemento() {
@@ -251,6 +388,11 @@ class CuantitativoTest {
         assertEquals(0.0, cuantitativo.desviacion(), 0.001);
     }
 
+    /**
+     * \brief Prueba que `desviacion()` lance `IllegalStateException` cuando el vector está vacío.
+     *
+     * Verifica que el método lance la excepción correcta cuando no hay datos para calcular la desviación.
+     */
     @Test
     @DisplayName("Debería lanzar IllegalStateException cuando desviacion se llama en un vector vacío")
     void testDesviacionVacio() {
@@ -259,6 +401,12 @@ class CuantitativoTest {
     }
 
 
+    /**
+     * \brief Prueba el método `estandarizacion()`.
+     *
+     * Verifica que los valores del atributo se transformen correctamente
+     * a sus puntuaciones Z (estandarización).
+     */
     @Test
     @DisplayName("Debería estandarizar los valores correctamente")
     void testEstandarizacion() {
@@ -276,6 +424,12 @@ class CuantitativoTest {
         assertEquals(1.22474487, (Double) cuantitativo.getValor(2), 0.0000001);
     }
 
+    /**
+     * \brief Prueba `estandarizacion()` cuando todos los valores son idénticos.
+     *
+     * Verifica que la estandarización maneje el caso de desviación estándar cero,
+     * resultando en todos los valores estandarizados a 0.0.
+     */
     @Test
     @DisplayName("Debería manejar la estandarización cuando todos los valores son idénticos")
     void testEstandarizacionTodosIdenticos() {
@@ -286,6 +440,12 @@ class CuantitativoTest {
         assertFalse(Double.isNaN((Double) cuantitativo.getValor(2)));
     }
 
+    /**
+     * \brief Prueba `estandarizacion()` con un solo elemento.
+     *
+     * Verifica que la estandarización de un solo elemento (media = valor, desviación = 0)
+     * resulte en 0.0.
+     */
     @Test
     @DisplayName("Debería manejar la estandarización con un solo elemento (resulta en NaN)")
     void testEstandarizacionUnicoElemento() {
@@ -295,6 +455,11 @@ class CuantitativoTest {
         assertFalse(Double.isNaN((Double) cuantitativo.getValor(0)));
     }
 
+    /**
+     * \brief Prueba que `estandarizacion()` lance `IllegalStateException` cuando el vector está vacío.
+     *
+     * Verifica que el método lance la excepción correcta si se intenta estandarizar un `Vector` vacío.
+     */
     @Test
     @DisplayName("Debería lanzar IllegalStateException cuando estandarizacion se llama en un vector vacío")
     void testEstandarizacionVacio() {
@@ -303,6 +468,11 @@ class CuantitativoTest {
 
     // --- Tests de Métodos Atributo Sobreescritos ---
 
+    /**
+     * \brief Prueba el método `size()` sobrescrito.
+     *
+     * Verifica que `size()` retorne correctamente el número de elementos en el `Vector` interno.
+     */
     @Test
     @DisplayName("Debería retornar correctamente el tamaño de los valores")
     void testSizeSobreescrito() {
@@ -313,6 +483,11 @@ class CuantitativoTest {
         assertEquals(2, cuantitativo.size());
     }
 
+    /**
+     * \brief Prueba el método `add()` sobrescrito.
+     *
+     * Verifica que un valor `Double` se pueda añadir correctamente al atributo.
+     */
     @Test
     @DisplayName("Debería añadir un valor Double")
     void testAddSobreescrito() {
@@ -321,6 +496,11 @@ class CuantitativoTest {
         assertEquals(5.5, (Double) cuantitativo.getValor(0));
     }
 
+    /**
+     * \brief Prueba que `add()` lance `ClassCastException` si se intenta añadir un objeto que no es numérico.
+     *
+     * También verifica que `Integer` se pueda añadir correctamente ya que `add` soporta `Number`.
+     */
     @Test
     @DisplayName("Debería lanzar ClassCastException si se añade un objeto que no es Double")
     void testAddSobreescritoNoDouble() {
@@ -333,6 +513,11 @@ class CuantitativoTest {
         assertEquals(10.0, (Double) cuantitativo.getValor(0));
     }
 
+    /**
+     * \brief Prueba el método `getValor()` sobrescrito.
+     *
+     * Verifica que un valor `Double` se pueda recuperar correctamente por su índice.
+     */
     @Test
     @DisplayName("Debería obtener un valor Double por índice")
     void testGetValorSobreescrito() {
@@ -340,6 +525,11 @@ class CuantitativoTest {
         assertEquals(7.7, (Double) cuantitativo.getValor(0));
     }
 
+    /**
+     * \brief Prueba que `getValor()` lance `IndexOutOfBoundsException` al acceder a índices inválidos.
+     *
+     * Verifica la correcta gestión de límites para la recuperación de valores.
+     */
     @Test
     @DisplayName("Debería lanzar IndexOutOfBoundsException al obtener un valor fuera de límites")
     void testGetValorSobreescritoFueraLimites() {
@@ -348,6 +538,12 @@ class CuantitativoTest {
         assertThrows(IndexOutOfBoundsException.class, () -> cuantitativo.getValor(1));
     }
 
+    /**
+     * \brief Prueba el método `delete()` sobrescrito.
+     *
+     * Verifica que un valor se pueda eliminar correctamente por su índice
+     * y que los elementos restantes se desplacen adecuadamente.
+     */
     @Test
     @DisplayName("Debería eliminar un valor por índice")
     void testDeleteSobreescrito() {
@@ -361,6 +557,11 @@ class CuantitativoTest {
         assertEquals(30.0, (Double) cuantitativo.getValor(1));
     }
 
+    /**
+     * \brief Prueba que `delete()` lance `IndexOutOfBoundsException` al intentar eliminar con índices inválidos.
+     *
+     * Verifica la correcta gestión de límites para la eliminación de valores.
+     */
     @Test
     @DisplayName("Debería lanzar IndexOutOfBoundsException al eliminar un valor fuera de límites")
     void testDeleteSobreescritoFueraLimites() {
@@ -369,6 +570,11 @@ class CuantitativoTest {
         assertThrows(IndexOutOfBoundsException.class, () -> cuantitativo.delete(1));
     }
 
+    /**
+     * \brief Prueba el método `clear()` sobrescrito.
+     *
+     * Verifica que `clear()` elimine todos los valores del atributo, dejándolo vacío.
+     */
     @Test
     @DisplayName("Debería limpiar todos los valores")
     void testClearSobreescrito() {
@@ -380,6 +586,11 @@ class CuantitativoTest {
         assertTrue(cuantitativo.getValores().size() == 0); // Ahora usa size()
     }
 
+    /**
+     * \brief Prueba el método `toString()` sobrescrito.
+     *
+     * Verifica que `toString()` retorne la representación en cadena del `Vector` interno de valores.
+     */
     @Test
     @DisplayName("Debería retornar la representación toString de los valores del Vector")
     void testToStringSobreescrito() {
@@ -388,6 +599,11 @@ class CuantitativoTest {
         assertEquals("[100.0, 200.0]", cuantitativo.toString());
     }
 
+    /**
+     * \brief Prueba `toString()` para una instancia de `Cuantitativo` vacía.
+     *
+     * Verifica que `toString()` retorne una cadena que represente un `Vector` vacío.
+     */
     @Test
     @DisplayName("Debería retornar la cadena de vector vacío para toString de Cuantitativo vacío")
     void testToStringSobreescritoVacio() {

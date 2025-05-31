@@ -12,17 +12,42 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @class DatosCrudosTest
+ * @brief Clase de pruebas unitarias para la clase DatosCrudos.
+ *
+ * Contiene pruebas para verificar el correcto funcionamiento del método procesar
+ * de la clase DatosCrudos, asegurando que retorna la lista de atributos del Dataset
+ * sin realizar ninguna modificación.
+ */
 @DisplayName("Tests para la clase DatosCrudos")
 class DatosCrudosTest {
 
+    /**
+     * @brief Instancia de la clase DatosCrudos a probar.
+     */
     private DatosCrudos datosCrudos; // Instancia de la clase a probar
 
+    /**
+     * @brief Método de configuración que se ejecuta antes de cada prueba.
+     *
+     * Inicializa una nueva instancia de DatosCrudos para cada test, asegurando
+     * un estado limpio en cada ejecución.
+     */
     @BeforeEach
     void setUp() {
         // Se inicializa una nueva instancia de DatosCrudos antes de cada test
         datosCrudos = new DatosCrudos();
     }
 
+    /**
+     * @brief Prueba que procesa un Dataset vacío.
+     *
+     * Verifica que al procesar un Dataset que no contiene atributos, el método
+     * `procesar` retorne una lista de atributos no nula y vacía. Además, asegura
+     * que la lista devuelta sea la misma instancia que la obtenida directamente
+     * del Dataset original, confirmando que no se realiza ninguna copia o modificación.
+     */
     @Test
     @DisplayName("Debería procesar un Dataset vacío y retornar una lista de atributos vacía")
     void testProcesarDatasetVacio() {
@@ -40,6 +65,13 @@ class DatosCrudosTest {
         assertSame(datasetVacio.getAtributos(), atributosProcesados, "La lista de atributos devuelta debería ser la misma instancia que la del Dataset original");
     }
 
+    /**
+     * @brief Prueba que procesa un Dataset con atributos.
+     *
+     * Verifica que al procesar un Dataset que contiene atributos, el método
+     * `procesar` retorne la misma lista de atributos (misma instancia y mismos objetos internos)
+     * que la del Dataset original, sin realizar ninguna modificación.
+     */
     @Test
     @DisplayName("Debería procesar un Dataset con atributos y retornar la misma lista de atributos")
     void testProcesarDatasetConAtributos() {
@@ -81,6 +113,13 @@ class DatosCrudosTest {
         assertEquals("Madrid", ((Cualitativo)atributosProcesados.get(1)).getValor(0));
     }
 
+    /**
+     * @brief Prueba que verifica la mutabilidad de la lista retornada.
+     *
+     * Asegura que la lista de atributos devuelta por el método `procesar` sea mutable
+     * y que las modificaciones realizadas a esta lista se reflejen en el Dataset original,
+     * ya que `DatosCrudos.procesar` retorna una referencia directa a la lista interna del Dataset.
+     */
     @Test
     @DisplayName("Debería retornar una lista mutable, reflejando el comportamiento de Dataset.getAtributos()")
     void testProcesarRetornaListaMutable() {

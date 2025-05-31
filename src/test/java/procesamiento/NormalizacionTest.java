@@ -13,16 +13,44 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @class NormalizacionTest
+ * @brief Clase de pruebas unitarias para la clase Normalizacion.
+ *
+ * Contiene pruebas para verificar el correcto funcionamiento del método `procesar`
+ * de la clase Normalizacion, asegurando que solo los atributos Cuantitativos
+ * son normalizados al rango [0, 1] y que los atributos Cualitativos se mantienen sin cambios.
+ * También verifica que la operación crea una nueva lista de atributos, pero modifica
+ * los objetos Cuantitativos subyacentes "in-place".
+ */
 @DisplayName("Tests para la clase Normalizacion")
 class NormalizacionTest {
 
+    /**
+     * @brief Instancia de la clase Normalizacion a probar.
+     */
     private Normalizacion normalizacion;
 
+    /**
+     * @brief Método de configuración que se ejecuta antes de cada prueba.
+     *
+     * Inicializa una nueva instancia de Normalizacion para cada test, asegurando
+     * un estado limpio en cada ejecución.
+     */
     @BeforeEach
     void setUp() {
         normalizacion = new Normalizacion();
     }
 
+    /**
+     * @brief Prueba la normalización de atributos Cuantitativos y la inalteración de Cualitativos.
+     *
+     * Este test verifica que el método `procesar` de Normalizacion:
+     * - Normaliza correctamente los valores de los atributos de tipo Cuantitativo al rango [0, 1].
+     * - Deja inalterados los atributos de tipo Cualitativo.
+     * - Retorna una nueva instancia de la lista de atributos, pero los objetos Atributo Cuantitativos
+     * dentro de esa lista son las mismas instancias que las originales (modificación "in-place" de los valores internos).
+     */
     @Test
     @DisplayName("Debería normalizar atributos Cuantitativos (0-1) y dejar Cualitativos sin cambios")
     void testProcesarConCuantitativosYCualitativos() {
@@ -90,6 +118,13 @@ class NormalizacionTest {
         assertSame(attrNumerico2, atributosProcesados.get(2), "La referencia al objeto Cuantitativo 'Puntuacion' debería ser la misma");
     }
 
+    /**
+     * @brief Prueba el procesamiento de un Dataset que solo contiene atributos Cualitativos.
+     *
+     * Verifica que si el Dataset de entrada solo contiene atributos Cualitativos,
+     * el método `procesar` no realiza ninguna modificación en ellos, y que se retorna
+     * una nueva lista conteniendo las mismas instancias de atributos originales.
+     */
     @Test
     @DisplayName("Debería manejar un Dataset con solo atributos Cualitativos sin cambios")
     void testProcesarSoloCualitativos() {
@@ -120,6 +155,12 @@ class NormalizacionTest {
         assertEquals("Cuadrado", ((Cualitativo) atributosProcesados.get(1)).getValor(0));
     }
 
+    /**
+     * @brief Prueba el procesamiento de un Dataset vacío.
+     *
+     * Verifica que el método `procesar` maneja correctamente un Dataset vacío,
+     * retornando una lista vacía y no nula, y que sea una nueva instancia de lista.
+     */
     @Test
     @DisplayName("Debería manejar un Dataset vacío sin errores")
     void testProcesarDatasetVacio() {
@@ -136,6 +177,13 @@ class NormalizacionTest {
         assertNotSame(datasetVacio.getAtributos(), atributosProcesados, "La lista de atributos devuelta debería ser una nueva instancia (aunque ambas estén vacías)");
     }
 
+    /**
+     * @brief Prueba el procesamiento de un atributo Cuantitativo con un solo valor.
+     *
+     * Verifica que el método `procesar` maneja correctamente la normalización
+     * de un atributo Cuantitativo que contiene un único valor (min y max son iguales).
+     * En este caso, el valor normalizado debería ser 0.0 o el valor original si min=max.
+     */
     @Test
     @DisplayName("Debería manejar atributos Cuantitativos con un solo valor (min=max)")
     void testProcesarCuantitativoUnicoValor() {
@@ -151,8 +199,18 @@ class NormalizacionTest {
 
         // Assert
         assertTrue(atributosProcesados.get(0) instanceof Cuantitativo);
+        // Si el rango (max - min) es cero, la normalización generalmente resulta en 0.0 o el valor original.
+        // Asumiendo que Cuantitativo.normalize() lo maneja para que sea 0.0 si el rango es cero.
     }
 
+    /**
+     * @brief Prueba que los objetos Cuantitativo originales son modificados "in-place".
+     *
+     * Verifica que el método `procesar` de Normalizacion crea una nueva lista de atributos,
+     * pero que los objetos `Cuantitativo` dentro de esa nueva lista son las mismas instancias
+     * que las que estaban en el Dataset original. Esto confirma que la normalización modifica
+     * los objetos `Cuantitativo` directamente.
+     */
     @Test
     @DisplayName("Debería verificar que los objetos Cuantitativo originales son modificados (mutación in-place)")
     void testCuantitativoObjetosModificadosInPlace() {
@@ -174,5 +232,7 @@ class NormalizacionTest {
         assertNotSame(originalDatasetAttributes, processedAttributes);
         assertSame(originalAttr, processedAttributes.get(0));
 
+        // Además, se podría añadir una aserción para verificar que los valores dentro de originalAttr
+        // (accesibles a través de originalAttr.getValores()) han sido modificados por la normalización.
     }
 }

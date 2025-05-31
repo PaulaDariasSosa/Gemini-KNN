@@ -9,11 +9,24 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * \brief Test class for the abstract Atributo class using a concrete DummyAtributo implementation.
+ *
+ * This class contains unit tests to verify the correct behavior of the
+ * `Atributo` abstract class's public methods, specifically focusing on
+ * its getters, setters, and abstract methods implemented by `DummyAtributo`.
+ */
 @DisplayName("Atributo Abstract Class Tests")
 class AtributoTest {
 
     private DummyAtributo atributo; // Use the concrete dummy implementation
 
+    /**
+     * \brief Sets up the test environment before each test method is executed.
+     *
+     * Initializes a new `DummyAtributo` instance with a default name and weight
+     * to ensure a clean state for every test.
+     */
     @BeforeEach
     void setUp() {
         // Initialize a fresh DummyAtributo before each test
@@ -22,6 +35,12 @@ class AtributoTest {
 
     // --- Constructor-like (for DummyAtributo) and Basic Getters/Setters Tests ---
 
+    /**
+     * \brief Tests if the constructor correctly initializes the name and peso (weight).
+     *
+     * Verifies that the `DummyAtributo` constructor, which calls the `Atributo`'s
+     * protected setters, correctly sets the initial name and peso.
+     */
     @Test
     @DisplayName("Should initialize name and peso correctly via constructor")
     void testConstructorInitialization() {
@@ -29,6 +48,11 @@ class AtributoTest {
         assertEquals(5.0, atributo.getPeso());
     }
 
+    /**
+     * \brief Tests the `setNombre` and `getNombre` methods.
+     *
+     * Verifies that the name of the attribute can be correctly set and retrieved.
+     */
     @Test
     @DisplayName("Should allow setting and getting the name")
     void testSetAndGetNombre() {
@@ -36,6 +60,11 @@ class AtributoTest {
         assertEquals("NewName", atributo.getNombre());
     }
 
+    /**
+     * \brief Tests the `setPeso` and `getPeso` methods.
+     *
+     * Verifies that the weight of the attribute can be correctly set and retrieved.
+     */
     @Test
     @DisplayName("Should allow setting and getting the peso")
     void testSetAndGetPeso() {
@@ -43,6 +72,12 @@ class AtributoTest {
         assertEquals(10.5, atributo.getPeso());
     }
 
+    /**
+     * \brief Tests the default weight assignment in `DummyAtributo`'s constructor.
+     *
+     * Verifies that if the weight is not explicitly specified during `DummyAtributo`
+     * instantiation, it defaults to 1.0.
+     */
     @Test
     @DisplayName("Should default peso to 1 if not specified (DummyAtributo constructor)")
     void testDefaultPeso() {
@@ -50,6 +85,11 @@ class AtributoTest {
         assertEquals(1.0, defaultAtributo.getPeso());
     }
 
+    /**
+     * \brief Tests the `get` method's string formatting.
+     *
+     * Verifies that the `get` method returns a string in the expected "name: peso" format.
+     */
     @Test
     @DisplayName("Should return name and peso in 'get' method format")
     void testGetMethod() {
@@ -61,6 +101,12 @@ class AtributoTest {
 
     // --- Abstract Method Implementation Tests (via DummyAtributo) ---
 
+    /**
+     * \brief Tests the `add`, `size`, and `getValor` methods.
+     *
+     * Verifies that values can be added, the size correctly reflects the number of elements,
+     * and individual values can be retrieved by index.
+     */
     @Test
     @DisplayName("Should correctly add values and reflect in size and getValor")
     void testAddAndSizeAndGetValor() {
@@ -74,6 +120,11 @@ class AtributoTest {
         assertEquals(123, atributo.getValor(1));
     }
 
+    /**
+     * \brief Tests for `IndexOutOfBoundsException` when calling `getValor` with invalid indices.
+     *
+     * Verifies that `getValor` throws the expected exception for negative or out-of-bounds indices.
+     */
     @Test
     @DisplayName("Should throw IndexOutOfBoundsException for invalid index in getValor")
     void testGetValorOutOfBounds() {
@@ -82,6 +133,12 @@ class AtributoTest {
         assertThrows(IndexOutOfBoundsException.class, () -> atributo.getValor(1)); // Size is 1, index 1 is out of bounds
     }
 
+    /**
+     * \brief Tests the `delete` method's functionality.
+     *
+     * Verifies that values can be correctly deleted from the attribute's list and
+     * the size is updated accordingly. Also checks that subsequent elements shift correctly.
+     */
     @Test
     @DisplayName("Should correctly delete values and update size")
     void testDelete() {
@@ -96,6 +153,11 @@ class AtributoTest {
         assertEquals("Value3", atributo.getValor(1)); // "Value3" shifted
     }
 
+    /**
+     * \brief Tests for `IndexOutOfBoundsException` when calling `delete` with invalid indices.
+     *
+     * Verifies that `delete` throws the expected exception for negative or out-of-bounds indices.
+     */
     @Test
     @DisplayName("Should throw IndexOutOfBoundsException for invalid index in delete")
     void testDeleteOutOfBounds() {
@@ -104,6 +166,11 @@ class AtributoTest {
         assertThrows(IndexOutOfBoundsException.class, () -> atributo.delete(1)); // Size is 1, index 1 is out of bounds
     }
 
+    /**
+     * \brief Tests the `clear` method's functionality.
+     *
+     * Verifies that all values are removed from the attribute and its size becomes zero.
+     */
     @Test
     @DisplayName("Should clear all values and set size to 0")
     void testClear() {
@@ -115,6 +182,12 @@ class AtributoTest {
         assertTrue(((List<?>) atributo.getValores()).isEmpty()); // Verify the underlying list is empty
     }
 
+    /**
+     * \brief Tests that `getValores` returns a defensive copy of the internal list.
+     *
+     * Verifies that modifying the list returned by `getValores` does not affect
+     * the internal state of the `Atributo` instance.
+     */
     @Test
     @DisplayName("Should return a copy of internal values in getValores")
     void testGetValoresReturnsCopy() {
@@ -132,6 +205,12 @@ class AtributoTest {
         assertEquals(2, atributo.size()); // Original size should be unchanged
     }
 
+    /**
+     * \brief Tests the `toString` method's output.
+     *
+     * Verifies that the `toString` method provides a descriptive string representation
+     * of the `DummyAtributo` instance, including its name, peso, and current values.
+     */
     @Test
     @DisplayName("Should return a descriptive string representation")
     void testToString() {

@@ -20,14 +20,35 @@ import java.util.Locale; // Ensure Locale is imported for Scanner tests in Vecto
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @class MatrizTest
+ * @brief Tests for the Matriz class.
+ *
+ * This class provides a comprehensive set of unit tests for the `Matriz` class,
+ * covering its constructors, getters, element manipulation (get/set),
+ * matrix operations (transpose, add/delete rows/columns), I/O operations (print, write),
+ * and normalization. It uses JUnit 5 for testing and Mockito for mocking dependencies where necessary.
+ */
 @DisplayName("Matriz Class Tests")
 class MatrizTest {
 
+    /**
+     * @brief Temporary directory for file I/O tests.
+     *
+     * JUnit's @TempDir annotation ensures a temporary directory is created
+     * before each test method and cleaned up afterwards.
+     */
     @TempDir
     Path tempDir; // Temporary directory for file I/O tests
 
     // Logger is used for internal warnings/errors; we primarily test behavior.
 
+    /**
+     * @brief Set up method executed before each test.
+     *
+     * This method can be used to initialize common test data or configurations
+     * before each test case runs.
+     */
     @BeforeEach
     void setUp() {
         // Any setup needed before each test can go here.
@@ -35,6 +56,12 @@ class MatrizTest {
 
     // --- Constructor Tests ---
 
+    /**
+     * @brief Tests the default constructor of the Matriz class.
+     *
+     * Verifies that the default constructor creates a 1x1 matrix initialized with 0.0,
+     * and that the `isTransposed` flag is initially false.
+     */
     @Test
     @DisplayName("Should create a 1x1 matrix with 0.0 using default constructor")
     void testConstructorDefault() {
@@ -46,6 +73,11 @@ class MatrizTest {
         assertFalse(matriz.isTransposed);
     }
 
+    /**
+     * @brief Tests the constructor that creates an m x n matrix initialized with zeros.
+     *
+     * Verifies that the matrix dimensions are correct and all elements are initialized to 0.0.
+     */
     @Test
     @DisplayName("Should create an mxn matrix initialized with zeros")
     void testConstructorMxN() {
@@ -61,6 +93,11 @@ class MatrizTest {
         assertFalse(matriz.isTransposed);
     }
 
+    /**
+     * @brief Tests that the m x n constructor throws an IllegalArgumentException for non-positive dimensions.
+     *
+     * Ensures that the constructor correctly handles invalid input for rows (m) and columns (n).
+     */
     @Test
     @DisplayName("Should throw IllegalArgumentException for non-positive dimensions in constructor(m,n)")
     void testConstructorMxNInvalidDimensions() {
@@ -70,6 +107,12 @@ class MatrizTest {
         assertThrows(IllegalArgumentException.class, () -> new Matriz(5, -1));
     }
 
+    /**
+     * @brief Tests the constructor that creates a matrix from a 2D double array.
+     *
+     * Verifies that the matrix is correctly initialized with the provided data
+     * and that dimensions match.
+     */
     @Test
     @DisplayName("Should create a matrix from a 2D double array")
     void testConstructor2DArray() {
@@ -85,12 +128,18 @@ class MatrizTest {
         assertFalse(matriz.isTransposed);
     }
 
+    /**
+     * @brief Tests that the 2D array constructor throws an IllegalArgumentException for a null array.
+     */
     @Test
     @DisplayName("Should throw IllegalArgumentException for null 2D array in constructor")
     void testConstructor2DArrayNull() {
         assertThrows(IllegalArgumentException.class, () -> new Matriz(2, 3, null));
     }
 
+    /**
+     * @brief Tests that the 2D array constructor throws an IllegalArgumentException for mismatching row count.
+     */
     @Test
     @DisplayName("Should throw IllegalArgumentException for mismatching rows in 2D array constructor")
     void testConstructor2DArrayMismatchRows() {
@@ -98,6 +147,9 @@ class MatrizTest {
         assertThrows(IllegalArgumentException.class, () -> new Matriz(3, 1, data));
     }
 
+    /**
+     * @brief Tests that the 2D array constructor throws an IllegalArgumentException for mismatching column count.
+     */
     @Test
     @DisplayName("Should throw IllegalArgumentException for mismatching columns in 2D array constructor")
     void testConstructor2DArrayMismatchCols() {
@@ -105,6 +157,11 @@ class MatrizTest {
         assertThrows(IllegalArgumentException.class, () -> new Matriz(2, 3, data));
     }
 
+    /**
+     * @brief Tests that the 2D array constructor throws an IllegalArgumentException for irregular 2D array.
+     *
+     * An irregular array is one where rows have different lengths.
+     */
     @Test
     @DisplayName("Should throw IllegalArgumentException for irregular 2D array (first row mismatching)")
     void testConstructor2DArrayIrregularFirstRow() {
@@ -112,6 +169,11 @@ class MatrizTest {
         assertThrows(IllegalArgumentException.class, () -> new Matriz(2, 2, data));
     }
 
+    /**
+     * @brief Tests the constructor that creates a matrix from a List of Vector objects.
+     *
+     * Verifies correct initialization and dimensions.
+     */
     @Test
     @DisplayName("Should create a matrix from a List of Vectors")
     void testConstructorListOfVectors() {
@@ -127,18 +189,27 @@ class MatrizTest {
         assertFalse(matriz.isTransposed);
     }
 
+    /**
+     * @brief Tests that the List of Vectors constructor throws an IllegalArgumentException for a null list.
+     */
     @Test
     @DisplayName("Should throw IllegalArgumentException for null List of Vectors in constructor")
     void testConstructorListOfVectorsNull() {
         assertThrows(IllegalArgumentException.class, () -> new Matriz((List<Vector>) null));
     }
 
+    /**
+     * @brief Tests that the List of Vectors constructor throws an IllegalArgumentException for an empty list.
+     */
     @Test
     @DisplayName("Should throw IllegalArgumentException for empty List of Vectors in constructor")
     void testConstructorListOfVectorsEmpty() {
         assertThrows(IllegalArgumentException.class, () -> new Matriz(new ArrayList<>()));
     }
 
+    /**
+     * @brief Tests that the List of Vectors constructor throws an IllegalArgumentException if vectors have different dimensions.
+     */
     @Test
     @DisplayName("Should throw IllegalArgumentException for List of Vectors with different dimensions")
     void testConstructorListOfVectorsDifferentDimensions() {
@@ -150,6 +221,12 @@ class MatrizTest {
 
     // --- Getters Tests ---
 
+    /**
+     * @brief Tests the getNumRows method.
+     *
+     * Verifies that the correct number of rows is returned,
+     * including after a transpose operation.
+     */
     @Test
     @DisplayName("Should return correct number of rows")
     void testGetNumRows() {
@@ -159,6 +236,12 @@ class MatrizTest {
         assertEquals(2, matriz.getNumRows()); // Rows become original cols
     }
 
+    /**
+     * @brief Tests the getNumCols method.
+     *
+     * Verifies that the correct number of columns is returned,
+     * including after a transpose operation.
+     */
     @Test
     @DisplayName("Should return correct number of columns")
     void testGetNumCols() {
@@ -170,6 +253,12 @@ class MatrizTest {
 
     // --- Print Test (mostly for coverage, hard to assert console output) ---
 
+    /**
+     * @brief Tests the print method.
+     *
+     * This test primarily ensures that calling the print method does not throw any errors,
+     * as asserting console output is generally difficult in unit tests.
+     */
     @Test
     @DisplayName("Should print matrix (no assertions, just ensure no errors)")
     void testPrint() {
@@ -177,6 +266,14 @@ class MatrizTest {
         assertDoesNotThrow(matriz::print);
     }
 
+    /**
+     * @brief Tests that the print method handles null rows gracefully without throwing errors.
+     *
+     * Uses reflection to inject a null row into the matrix for testing purposes.
+     * This test focuses on behavior, not specific output.
+     * @throws NoSuchFieldException If the 'matrix' field is not found.
+     * @throws IllegalAccessException If access to the 'matrix' field is denied.
+     */
     @Test
     @DisplayName("Should handle null rows when printing (no assertions, just ensure no errors)")
     void testPrintWithNullRows() throws NoSuchFieldException, IllegalAccessException {
@@ -193,6 +290,11 @@ class MatrizTest {
 
     // --- Write Test ---
 
+    /**
+     * @brief Tests the write method to ensure matrix data is correctly written to a file.
+     *
+     * @throws IOException If an I/O error occurs during file operations.
+     */
     @Test
     @DisplayName("Should write matrix data to a file")
     void testWrite() throws IOException {
@@ -212,6 +314,9 @@ class MatrizTest {
         }
     }
 
+    /**
+     * @brief Tests that the write method throws an IllegalArgumentException for a null filename.
+     */
     @Test
     @DisplayName("Should throw IllegalArgumentException for null filename in write")
     void testWriteNullFilename() {
@@ -219,6 +324,9 @@ class MatrizTest {
         assertThrows(IllegalArgumentException.class, () -> matriz.write(null));
     }
 
+    /**
+     * @brief Tests that the write method throws an IllegalArgumentException for an empty filename.
+     */
     @Test
     @DisplayName("Should throw IllegalArgumentException for empty filename in write")
     void testWriteEmptyFilename() {
@@ -226,6 +334,12 @@ class MatrizTest {
         assertThrows(IllegalArgumentException.class, () -> matriz.write(""));
     }
 
+    /**
+     * @brief Tests that the write method correctly handles IOException.
+     *
+     * This test attempts to write to an invalid path to provoke an IOException.
+     * The success of this test might depend on the operating system's file system behavior.
+     */
     @Test
     @DisplayName("Should handle IOException during write")
     void testWriteIOException() {
@@ -237,6 +351,14 @@ class MatrizTest {
         assertThrows(IOException.class, () -> matriz.write(nonWritableFile.getAbsolutePath()));
     }
 
+    /**
+     * @brief Tests that the write method handles null rows gracefully when writing to a file.
+     *
+     * Uses reflection to inject a null row and verifies the file content.
+     * @throws IOException If an I/O error occurs.
+     * @throws NoSuchFieldException If the 'matrix' field is not found.
+     * @throws IllegalAccessException If access to the 'matrix' field is denied.
+     */
     @Test
     @DisplayName("Should handle null rows gracefully when writing to a file")
     void testWriteWithNullRows() throws IOException, NoSuchFieldException, IllegalAccessException {
@@ -264,6 +386,11 @@ class MatrizTest {
 
     // --- Get/Set Element Tests ---
 
+    /**
+     * @brief Tests the get method for valid indices.
+     *
+     * Verifies that the correct element is retrieved at specified row and column.
+     */
     @Test
     @DisplayName("Should get element at valid indices")
     void testGetValid() {
@@ -273,6 +400,9 @@ class MatrizTest {
         assertEquals(4.0, matriz.get(1, 1));
     }
 
+    /**
+     * @brief Tests that the get method throws an IndexOutOfBoundsException for a negative row index.
+     */
     @Test
     @DisplayName("Should throw IndexOutOfBoundsException when getting element at negative row index")
     void testGetNegativeRow() {
@@ -280,6 +410,9 @@ class MatrizTest {
         assertThrows(IndexOutOfBoundsException.class, () -> matriz.get(-1, 0));
     }
 
+    /**
+     * @brief Tests that the get method throws an IndexOutOfBoundsException for an out-of-bounds row index.
+     */
     @Test
     @DisplayName("Should throw IndexOutOfBoundsException when getting element at out-of-bounds row index")
     void testGetOutOfBoundsRow() {
@@ -287,6 +420,9 @@ class MatrizTest {
         assertThrows(IndexOutOfBoundsException.class, () -> matriz.get(2, 0));
     }
 
+    /**
+     * @brief Tests that the get method throws an IndexOutOfBoundsException for a negative column index.
+     */
     @Test
     @DisplayName("Should throw IndexOutOfBoundsException when getting element at negative column index")
     void testGetNegativeCol() {
@@ -294,6 +430,9 @@ class MatrizTest {
         assertThrows(IndexOutOfBoundsException.class, () -> matriz.get(0, -1));
     }
 
+    /**
+     * @brief Tests that the get method throws an IndexOutOfBoundsException for an out-of-bounds column index.
+     */
     @Test
     @DisplayName("Should throw IndexOutOfBoundsException when getting element at out-of-bounds column index")
     void testGetOutOfBoundsCol() {
@@ -301,6 +440,13 @@ class MatrizTest {
         assertThrows(IndexOutOfBoundsException.class, () -> matriz.get(0, 2));
     }
 
+    /**
+     * @brief Tests that the get method throws an IllegalStateException when trying to get an element from a null row.
+     *
+     * Uses reflection to inject a null row for testing.
+     * @throws NoSuchFieldException If the 'matrix' field is not found.
+     * @throws IllegalAccessException If access to the 'matrix' field is denied.
+     */
     @Test
     @DisplayName("Should throw IllegalStateException when getting element from a null row")
     void testGetFromNullRow() throws NoSuchFieldException, IllegalAccessException {
@@ -313,6 +459,11 @@ class MatrizTest {
         assertThrows(IllegalStateException.class, () -> matriz.get(0, 0));
     }
 
+    /**
+     * @brief Tests the set method for valid indices.
+     *
+     * Verifies that an element at a specific row and column can be successfully updated.
+     */
     @Test
     @DisplayName("Should set element at valid indices")
     void testSetValid() {
@@ -321,6 +472,9 @@ class MatrizTest {
         assertEquals(99.9, matriz.get(0, 0));
     }
 
+    /**
+     * @brief Tests that the set method throws an IndexOutOfBoundsException for a negative row index.
+     */
     @Test
     @DisplayName("Should throw IndexOutOfBoundsException when setting element at negative row index")
     void testSetNegativeRow() {
@@ -328,6 +482,9 @@ class MatrizTest {
         assertThrows(IndexOutOfBoundsException.class, () -> matriz.set(-1, 0, 0.0));
     }
 
+    /**
+     * @brief Tests that the set method throws an IndexOutOfBoundsException for an out-of-bounds row index.
+     */
     @Test
     @DisplayName("Should throw IndexOutOfBoundsException when setting element at out-of-bounds row index")
     void testSetOutOfBoundsRow() {
@@ -335,6 +492,9 @@ class MatrizTest {
         assertThrows(IndexOutOfBoundsException.class, () -> matriz.set(2, 0, 0.0));
     }
 
+    /**
+     * @brief Tests that the set method throws an IndexOutOfBoundsException for a negative column index.
+     */
     @Test
     @DisplayName("Should throw IndexOutOfBoundsException when setting element at negative column index")
     void testSetNegativeCol() {
@@ -342,6 +502,9 @@ class MatrizTest {
         assertThrows(IndexOutOfBoundsException.class, () -> matriz.set(0, -1, 0.0));
     }
 
+    /**
+     * @brief Tests that the set method throws an IndexOutOfBoundsException for an out-of-bounds column index.
+     */
     @Test
     @DisplayName("Should throw IndexOutOfBoundsException when setting element at out-of-bounds column index")
     void testSetOutOfBoundsCol() {
@@ -349,6 +512,13 @@ class MatrizTest {
         assertThrows(IndexOutOfBoundsException.class, () -> matriz.set(0, 2, 0.0));
     }
 
+    /**
+     * @brief Tests that the set method throws an IllegalStateException when trying to set an element in a null row.
+     *
+     * Uses reflection to inject a null row for testing.
+     * @throws NoSuchFieldException If the 'matrix' field is not found.
+     * @throws IllegalAccessException If access to the 'matrix' field is denied.
+     */
     @Test
     @DisplayName("Should throw IllegalStateException when setting element in a null row")
     void testSetToNullRow() throws NoSuchFieldException, IllegalAccessException {
@@ -364,6 +534,9 @@ class MatrizTest {
 
     // --- Equals Test ---
 
+    /**
+     * @brief Tests the equals method for two matrices that are identical in content and dimensions.
+     */
     @Test
     @DisplayName("Should return true for equal matrices")
     void testEqualsTrue() {
@@ -374,6 +547,9 @@ class MatrizTest {
         assertTrue(m1.equals(m2));
     }
 
+    /**
+     * @brief Tests the equals method for two matrices with different content but same dimensions.
+     */
     @Test
     @DisplayName("Should return false for different matrices (content)")
     void testEqualsFalseContent() {
@@ -384,6 +560,9 @@ class MatrizTest {
         assertFalse(m1.equals(m2));
     }
 
+    /**
+     * @brief Tests the equals method for two matrices with different dimensions.
+     */
     @Test
     @DisplayName("Should return false for different matrices (dimensions)")
     void testEqualsFalseDimensions() {
@@ -394,6 +573,9 @@ class MatrizTest {
         assertFalse(m1.equals(m2));
     }
 
+    /**
+     * @brief Tests the equals method when comparing a matrix with null.
+     */
     @Test
     @DisplayName("Should return false when comparing with null matrix")
     void testEqualsNull() {
@@ -401,6 +583,13 @@ class MatrizTest {
         assertFalse(m1.equals(null));
     }
 
+    /**
+     * @brief Tests the equals method when one of the matrices has a null row.
+     *
+     * Uses reflection to inject a null row.
+     * @throws NoSuchFieldException If the 'matrix' field is not found.
+     * @throws IllegalAccessException If access to the 'matrix' field is denied.
+     */
     @Test
     @DisplayName("Should return false if either matrix has a null row")
     void testEqualsWithNullRow() throws NoSuchFieldException, IllegalAccessException {
@@ -418,6 +607,14 @@ class MatrizTest {
         assertFalse(m2.equals(m1)); // m2 doesn't, m1 does
     }
 
+    /**
+     * @brief Tests the equals method when both matrices have null rows at the same position.
+     *
+     * Based on the current implementation of `equals` in `Matriz` (if either row is null, returns false),
+     * this test expects `false` even if both matrices have null rows at the same position.
+     * @throws NoSuchFieldException If the 'matrix' field is not found.
+     * @throws IllegalAccessException If access to the 'matrix' field is denied.
+     */
     @Test
     @DisplayName("Should return true for two null rows at the same position")
     void testEqualsWithTwoNullRows() throws NoSuchFieldException, IllegalAccessException {
@@ -449,6 +646,12 @@ class MatrizTest {
 
     // --- Transpose Test ---
 
+    /**
+     * @brief Tests the transpose method.
+     *
+     * Verifies that the `isTransposed` flag toggles correctly and that
+     * `numRows` and `numCols` are swapped after transposition.
+     */
     @Test
     @DisplayName("Should toggle the isTransposed flag")
     void testTranspose() {
@@ -470,6 +673,11 @@ class MatrizTest {
 
     // --- Row/Column Manipulation Tests ---
 
+    /**
+     * @brief Tests the deleteRows method with a valid index.
+     *
+     * Verifies that a row is successfully deleted and matrix dimensions are updated.
+     */
     @Test
     @DisplayName("Should delete a row at a valid index")
     void testDeleteRowsValid() {
@@ -482,6 +690,9 @@ class MatrizTest {
         assertEquals(0.0, matriz.get(1, 0)); // Original row 2 (now at index 1)
     }
 
+    /**
+     * @brief Tests that deleteRows throws an IndexOutOfBoundsException for a negative index.
+     */
     @Test
     @DisplayName("Should throw IndexOutOfBoundsException when deleting row at negative index")
     void testDeleteRowsNegativeIndex() {
@@ -489,6 +700,9 @@ class MatrizTest {
         assertThrows(IndexOutOfBoundsException.class, () -> matriz.deleteRows(-1));
     }
 
+    /**
+     * @brief Tests that deleteRows throws an IndexOutOfBoundsException for an out-of-bounds index.
+     */
     @Test
     @DisplayName("Should throw IndexOutOfBoundsException when deleting row at out-of-bounds index")
     void testDeleteRowsOutOfBoundsIndex() {
@@ -496,6 +710,11 @@ class MatrizTest {
         assertThrows(IndexOutOfBoundsException.class, () -> matriz.deleteRows(2));
     }
 
+    /**
+     * @brief Tests the deleteCols method with a valid index.
+     *
+     * Verifies that a column is successfully deleted and matrix dimensions are updated.
+     */
     @Test
     @DisplayName("Should delete a column at a valid index")
     void testDeleteColsValid() {
@@ -510,6 +729,9 @@ class MatrizTest {
         assertEquals(6.0, matriz.get(1, 1)); // Original column 2
     }
 
+    /**
+     * @brief Tests that deleteCols throws an IndexOutOfBoundsException for a negative index.
+     */
     @Test
     @DisplayName("Should throw IndexOutOfBoundsException when deleting column at negative index")
     void testDeleteColsNegativeIndex() {
@@ -517,6 +739,9 @@ class MatrizTest {
         assertThrows(IndexOutOfBoundsException.class, () -> matriz.deleteCols(-1));
     }
 
+    /**
+     * @brief Tests that deleteCols throws an IndexOutOfBoundsException for an out-of-bounds index.
+     */
     @Test
     @DisplayName("Should throw IndexOutOfBoundsException when deleting column at out-of-bounds index")
     void testDeleteColsOutOfBoundsIndex() {
@@ -524,6 +749,13 @@ class MatrizTest {
         assertThrows(IndexOutOfBoundsException.class, () -> matriz.deleteCols(2));
     }
 
+    /**
+     * @brief Tests that deleteCols handles null rows gracefully without errors.
+     *
+     * Uses reflection to inject a null row.
+     * @throws NoSuchFieldException If the 'matrix' field is not found.
+     * @throws IllegalAccessException If access to the 'matrix' field is denied.
+     */
     @Test
     @DisplayName("Should handle null rows gracefully when deleting columns (no errors)")
     void testDeleteColsWithNullRows() throws NoSuchFieldException, IllegalAccessException {
@@ -538,6 +770,11 @@ class MatrizTest {
         assertEquals(1, matriz.getNumCols()); // Column count should still decrease
     }
 
+    /**
+     * @brief Tests the addRows method.
+     *
+     * Verifies that a new row, initialized with zeros, is added and dimensions are updated.
+     */
     @Test
     @DisplayName("Should add a new row initialized with zeros")
     void testAddRows() {
@@ -549,6 +786,11 @@ class MatrizTest {
         assertEquals(0.0, matriz.get(2, 1));
     }
 
+    /**
+     * @brief Tests the addCols method.
+     *
+     * Verifies that a new column, initialized with zeros, is added to each row and dimensions are updated.
+     */
     @Test
     @DisplayName("Should add a new column initialized with zeros to each row")
     void testAddCols() {
@@ -564,6 +806,13 @@ class MatrizTest {
         assertEquals(0.0, matriz.get(1, 2)); // New column element
     }
 
+    /**
+     * @brief Tests that addCols handles null rows gracefully without errors.
+     *
+     * Uses reflection to inject a null row.
+     * @throws NoSuchFieldException If the 'matrix' field is not found.
+     * @throws IllegalAccessException If access to the 'matrix' field is denied.
+     */
     @Test
     @DisplayName("Should handle null rows gracefully when adding columns (no errors)")
     void testAddColsWithNullRows() throws NoSuchFieldException, IllegalAccessException {
@@ -582,6 +831,12 @@ class MatrizTest {
 
     // --- Normalize Test ---
 
+    /**
+     * @brief Tests the normalizar method.
+     *
+     * Verifies that a new list of normalized vectors is returned,
+     * and that the original matrix remains unchanged.
+     */
     @Test
     @DisplayName("Should return a new list of normalized vectors")
     void testNormalizar() {
@@ -614,6 +869,9 @@ class MatrizTest {
         assertEquals(10.0, matriz.get(0, 2));
     }
 
+    /**
+     * @brief Tests that normalizar handles an empty matrix gracefully.
+     */
     @Test
     @DisplayName("Should handle empty matrix for normalization")
     void testNormalizarEmptyMatrix() {
@@ -624,6 +882,13 @@ class MatrizTest {
         assertTrue(normalized.isEmpty());
     }
 
+    /**
+     * @brief Tests that normalizar handles null rows during normalization.
+     *
+     * Uses reflection to inject a null row.
+     * @throws NoSuchFieldException If the 'matrix' field is not found.
+     * @throws IllegalAccessException If access to the 'matrix' field is denied.
+     */
     @Test
     @DisplayName("Should handle null rows during normalization")
     void testNormalizarWithNullRows() throws NoSuchFieldException, IllegalAccessException {
@@ -643,6 +908,11 @@ class MatrizTest {
         assertEquals(0.0, normalized.get(1).get(0));
     }
 
+    /**
+     * @brief Tests that normalizar handles rows with a zero range (all elements are the same).
+     *
+     * Verifies that such rows remain unchanged after normalization, as per Vector.normalize() behavior.
+     */
     @Test
     @DisplayName("Should handle rows with zero range during normalization")
     void testNormalizarRowsWithZeroRange() {
